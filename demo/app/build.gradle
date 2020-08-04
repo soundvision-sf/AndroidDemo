@@ -8,8 +8,16 @@ android {
         applicationId "com.soundvision.demo"
         minSdkVersion 26
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+
+    def propVersionName = project.findProperty("verName") ?: "1.0.0.0"
+    def propVersionCode = project.findProperty("verCode") ?: 1
+
+    def tag = "SoundVisionDemo: [defaultConfig]:"
+    println "${tag} using verName = [${propVersionName}]"
+    println "${tag} using verCode = [${propVersionCode}]"
+
+    versionName propVersionName
+    versionCode propVersionCode as Integer
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
