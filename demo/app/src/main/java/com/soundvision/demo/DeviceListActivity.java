@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.scalefocus.soundvision.ble;
+package com.soundvision.demo;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -46,7 +46,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.scalefocus.soundvision.R;
+import com.scalefocus.soundvision.ble.BLETransferService;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class DeviceListActivity extends Activity {
    // private BluetoothAdapter mBtAdapter;
     private TextView mEmptyList;
     public static final String TAG = "DeviceListActivity";
-    private static final String TAG_MANIFACTURE = "SoundVision";
+    private static final String TAG_MANUFACTURE = "SoundVision";
     
     List<BluetoothDevice> deviceList;
     private DeviceAdapter deviceAdapter;
@@ -209,8 +209,6 @@ public class DeviceListActivity extends Activity {
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
 
-
-
         @Override
         //public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
         public void onLeScan(BluetoothDevice var1, int var2, byte[] var3) {
@@ -261,7 +259,7 @@ public class DeviceListActivity extends Activity {
                 try {
                     String manifacture = new String(disp, "UTF-8");
                     Log.i("NLS:bt", "disp : "+manifacture);
-                    if (TAG_MANIFACTURE.equals(manifacture)) {
+                    if (TAG_MANUFACTURE.equals(manifacture)) {
                         return true;
                     }
                 } catch (UnsupportedEncodingException e) {
