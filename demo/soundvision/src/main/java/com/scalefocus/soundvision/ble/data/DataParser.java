@@ -9,6 +9,16 @@ public abstract class DataParser {
         return (arr[offset] & 0xFF) | ((arr[offset+1]  & 0xFF) << 8) | ((arr[offset+2]  & 0xFF) << 16) | ((arr[offset+3] & 0xFF) << 24);
     }
 
+    public static int readInt16(byte[] arr, int offset)
+    {
+        return (arr[offset] & 0xFF) | ((arr[offset+1]  & 0xFF) << 8);
+    }
+
+    public static int readInt8(byte[] arr, int offset)
+    {
+        return (arr[offset] & 0xFF);
+    }
+
     public static void writeInt(byte[] arr, int offset, int data)
     {
         arr[offset]   = (byte)(data & 0xFF);

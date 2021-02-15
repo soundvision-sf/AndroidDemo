@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES;
 import static com.kynetics.uf.android.api.UFServiceCommunicationConstants.MSG_AUTHORIZATION_RESPONSE;
@@ -196,6 +197,23 @@ public class BaseActivity extends AppCompatActivity implements BLETransferClient
 
     }
 
+    private void connectToDevice()
+    {
+        /*
+        if (mService != null)
+        {
+            List<BluetoothDevice> boundedList = mService.getBondedDevicesByName(BLETransferService.SoundVisionDeviceName);
+            if (boundedList.size() == 1) {
+                mService.connect(boundedList.get(0).getAddress());
+                return;
+            }
+        }
+*/
+        Intent newIntent = new Intent(BaseActivity.this, DeviceListActivity.class);
+        startActivityForResult(newIntent, REQUEST_SELECT_DEVICE);
+
+    }
+
     private void init()
     {
 
@@ -220,8 +238,7 @@ public class BaseActivity extends AppCompatActivity implements BLETransferClient
                     startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
                 } else {
                     if (!mBleConnected) {
-                        Intent newIntent = new Intent(BaseActivity.this, DeviceListActivity.class);
-                        startActivityForResult(newIntent, REQUEST_SELECT_DEVICE);
+                        connectToDevice();
                     } else {
                         //Disconnect button pressed
                         if (mDevice != null) {

@@ -26,7 +26,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.scalefocus.soundvision.ble.data.ColorScanConfiguration;
 import com.scalefocus.soundvision.ble.data.DeviceStats;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -50,7 +52,7 @@ public class BLETransferService extends Service {
         SendLedValue};
 
 
-
+    public final static String SoundVisionDeviceName = "SoundVision";
     private final static String TAG = BLETransferService.class.getSimpleName();
 
     private BluetoothManager mBluetoothManager;
@@ -408,6 +410,21 @@ public class BLETransferService extends Service {
         mBluetoothGatt = null;
     }
 
+    public List<BluetoothDevice> getBondedDevicesByName(String deviceName) {
+        List<BluetoothDevice> ret = new ArrayList<>();
+        if (mBluetoothAdapter != null) {
+            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+                for (BluetoothDevice device : pairedDevices) {
+                    String devName = device.getName();
+                    if (devName.equals(deviceName))
+                    {
+                        ret.add(device);
+                    }
+                }
+        }
+        return ret;
+    }
     /**
      * Request a read on a given {@code BluetoothGattCharacteristic}. The read result is reported
      * asynchronously through the {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}

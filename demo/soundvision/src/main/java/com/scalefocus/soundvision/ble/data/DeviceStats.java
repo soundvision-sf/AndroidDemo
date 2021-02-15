@@ -4,6 +4,7 @@ public class DeviceStats extends DataParser{
 
     private static final int SV_DEVICE_STATS   =    0x82736455;
 
+    public int proto_version;
     public int distance;
     public int color[] = new int[8];
     public int color_count[] = new int[8];
@@ -12,11 +13,15 @@ public class DeviceStats extends DataParser{
     public int ledMask;
     public String macAddress;
 
-    public int battery_level;
+    public int data_seed;
 
-    public float inclination_angle;
-    public int heading_angle;
-    public int compass_direction;
+    public int compass_direction; // 16
+    public int compass_inclination; // 16
+    public int compass_heading; // 16
+    public int compass_status; // 8
+
+    public int battery_level; // 8
+    public int battery_status; // 8
 
     boolean isValid = false;
 
@@ -35,7 +40,9 @@ public class DeviceStats extends DataParser{
     public boolean parse(byte[] data)
     {
         if (!match(data)) return false;
-        int pos = 8; // skip session
+        int pos = 4; // skip session
+
+        proto_version = readInt(data, pos); pos += 4;
         distance = readInt(data, pos); pos += 4;
         for (int i=0; i<8; i++) {
             color[i] = readInt(data, pos); pos += 4;
@@ -50,11 +57,13 @@ public class DeviceStats extends DataParser{
 
         pos += 4; // skip seed
 
-        battery_level = readInt(data, pos);  pos += 4;
+        compass_inclination = readInt16(data, pos);  pos += 2;
+        compass_direction = readInt16(data, pos);  pos += 2;
+        compass_heading = readInt16(data, pos);  pos += 2;
+        compass_status = readInt8(data, pos);  pos += 1;
 
-        inclination_angle = (float)readInt(data, pos);  pos += 4;
-        heading_angle = readInt(data, pos);  pos += 4;
-        compass_direction = readInt(data, pos);  pos += 4;
+        battery_level = readInt8(data, pos);  pos += 1;
+        battery_status = readInt8(data, pos);  pos += 1;
 
         return true;
     }

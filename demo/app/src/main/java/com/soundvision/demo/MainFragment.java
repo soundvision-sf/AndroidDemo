@@ -464,7 +464,7 @@ public class MainFragment extends Fragment implements BLETransferClient {
                 btRight.setPressed(keyValues[1] > 0);
                 btDown.setPressed(keyValues[3] > 0);
 
-                tvID.setText("I:"+devstats.inclination_angle+" H:"+devstats.heading_angle+" C:"+devstats.compass_direction);
+                tvID.setText("I:"+devstats.compass_inclination +" H:"+devstats.compass_heading +" C:"+devstats.compass_direction);
 
             }
         });
