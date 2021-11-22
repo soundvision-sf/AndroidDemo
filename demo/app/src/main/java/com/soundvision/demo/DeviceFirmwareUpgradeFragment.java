@@ -35,6 +35,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.scalefocus.soundvision.ble.BLETransferClient;
 import com.scalefocus.soundvision.ble.BLETransferService;
+import com.scalefocus.soundvision.ble.IBLETransferClient;
+import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;
 import com.scalefocus.soundvision.ble.data.ColorScanConfiguration;
 import com.scalefocus.soundvision.ble.data.DeviceStats;
 import com.soundvision.demo.dfu.DfuService;
@@ -56,7 +58,7 @@ import android.app.LoaderManager.LoaderCallbacks;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.ACTIVITY_SERVICE;
 
-public class DeviceFirmwareUpgradeFragment extends Fragment implements BLETransferClient , LoaderCallbacks<Cursor>, //ScannerFragment.OnDeviceSelectedListener,
+public class DeviceFirmwareUpgradeFragment extends Fragment implements IBLETransferClient, LoaderCallbacks<Cursor>, //ScannerFragment.OnDeviceSelectedListener,
         UploadCancelFragment.CancelFragmentListener, DeviceConnectionEventListener, View.OnClickListener {
 
     private static final String TAG = "DeviceFirmwareUpgradeFragment";
@@ -344,6 +346,7 @@ public class DeviceFirmwareUpgradeFragment extends Fragment implements BLETransf
             statusOk = true;
             showProgressBar();
         }
+
     }
 
     @Override
@@ -948,6 +951,11 @@ public class DeviceFirmwareUpgradeFragment extends Fragment implements BLETransf
 
     @Override
     public void OnColorScanConfig(ColorScanConfiguration stats) {
+
+    }
+
+    @Override
+    public void OnBLEAdvScan(BLEScanAdvertising stats) {
 
     }
 

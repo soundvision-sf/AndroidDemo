@@ -20,8 +20,6 @@ public class UpgradeClientService {
 
     private static final String TAG = UpgradeClientService.class.getSimpleName();
 
-
-
     private String lastVersion = "";
     private TargetDeployment.Artifact updateArtifact = null;
     private HBDownloadFile.OnFirmwareUpdateCallback callback;

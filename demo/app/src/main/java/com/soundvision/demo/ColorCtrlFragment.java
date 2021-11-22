@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment;
 
 import com.scalefocus.soundvision.ble.BLETransferClient;
 import com.scalefocus.soundvision.ble.BLETransferService;
+import com.scalefocus.soundvision.ble.IBLETransferClient;
+import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;
 import com.scalefocus.soundvision.ble.data.ColorScanConfiguration;
 import com.scalefocus.soundvision.ble.data.DeviceStats;
 import com.soundvision.demo.palette.palBase16;
@@ -22,7 +24,7 @@ import com.soundvision.demo.ui.ColorView;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-public class ColorCtrlFragment extends Fragment implements BLETransferClient {
+public class ColorCtrlFragment extends Fragment implements IBLETransferClient {
 
     private LinearLayout layoutColors;
     private Button btReset;
@@ -306,5 +308,10 @@ public class ColorCtrlFragment extends Fragment implements BLETransferClient {
         trGray.setProgress(stats.gray);
         trLight.setProgress(stats.light);
         trDark.setProgress(stats.dark);
+    }
+
+    @Override
+    public void OnBLEAdvScan(BLEScanAdvertising stats) {
+
     }
 }

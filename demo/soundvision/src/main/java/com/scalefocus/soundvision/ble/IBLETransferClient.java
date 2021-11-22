@@ -1,9 +1,10 @@
 package com.scalefocus.soundvision.ble;
 
+import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;
 import com.scalefocus.soundvision.ble.data.ColorScanConfiguration;
 import com.scalefocus.soundvision.ble.data.DeviceStats;
 
-public interface BLETransferClient {
+public interface IBLETransferClient {
 
     int SV_KEY_UP                        =  82;
     int SV_KEY_LEFT                      =  80;
@@ -17,7 +18,10 @@ public interface BLETransferClient {
     void OnConnect();
     void OnDisconnect();
     void OnDiscovery();
+
+
     void OnData(final byte[] data);
     void OnStatusInfoChange(DeviceStats stats);
     void OnColorScanConfig(ColorScanConfiguration stats);
+    void OnBLEAdvScan(BLEScanAdvertising stats);
 }

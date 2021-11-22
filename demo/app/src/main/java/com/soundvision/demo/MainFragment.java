@@ -1,5 +1,8 @@
 package com.soundvision.demo;
 
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -24,6 +27,8 @@ import androidx.fragment.app.Fragment;
 
 import com.scalefocus.soundvision.ble.BLETransferClient;
 import com.scalefocus.soundvision.ble.BLETransferService;
+import com.scalefocus.soundvision.ble.IBLETransferClient;
+import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;
 import com.scalefocus.soundvision.ble.data.ColorScanConfiguration;
 import com.scalefocus.soundvision.ble.data.DataSegment;
 import com.scalefocus.soundvision.ble.data.DeviceStats;
@@ -31,18 +36,20 @@ import com.scalefocus.soundvision.ble.data.DeviceStats;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import static android.view.MotionEvent.ACTION_DOWN;
 import static android.view.MotionEvent.ACTION_UP;
 
-public class MainFragment extends Fragment implements BLETransferClient {
+public class MainFragment extends Fragment implements IBLETransferClient {
 
     private static final String TAG = "BLE.DEMO";
     ////////////////////////////  BLE
@@ -59,10 +66,10 @@ public class MainFragment extends Fragment implements BLETransferClient {
     private boolean mBleConnected = false;
     public int last_color_value = 0;
 
-    private TextView tvDist;
+    private TextView tvDist, tvBattery, tvBrightness;
     private TextView tvColor[] = new TextView[8];
 
-    private ImageButton btTop, btRight, btDown, btLeft;
+    private ImageButton btTop, btRight, btDown, btLeft, btEnter;
 
     private TextView tvCamera;
     private TextView tvID;
@@ -179,11 +186,15 @@ public class MainFragment extends Fragment implements BLETransferClient {
         btRight = getView().findViewById(R.id.btRight);
         btDown = getView().findViewById(R.id.btDown);
         btLeft = getView().findViewById(R.id.btLeft);
+        btEnter = getView().findViewById(R.id.btEnter);
+        tvBattery = getView().findViewById(R.id.tvBattery);
+        tvBrightness = getView().findViewById(R.id.tvBrightness);
 
         btTop.setTag(SV_KEY_UP);
         btRight.setTag(SV_KEY_RIGHT);
         btLeft.setTag(SV_KEY_LEFT);
         btDown.setTag(SV_KEY_DOWN);
+        btEnter.setTag(SV_KEY_ENTER);
 
         View.OnTouchListener h = new View.OnTouchListener() {
             @Override
@@ -214,6 +225,7 @@ public class MainFragment extends Fragment implements BLETransferClient {
         btRight.setOnTouchListener(h);
         btLeft.setOnTouchListener(h);
         btDown.setOnTouchListener(h);
+        btEnter.setOnTouchListener(h);
 
         tvStatsInfo = getView().findViewById(R.id.tvStatsInfo);
 
@@ -294,11 +306,35 @@ public class MainFragment extends Fragment implements BLETransferClient {
     private void setConnectionState(boolean connected)
     {
         mBleConnected = connected;
+
+        if (connected) {
+            List<BluetoothGattService> list = mService.getSupportedGattServices();
+            if (list != null)
+                for (BluetoothGattService serv : list)
+                {
+                    List<BluetoothGattCharacteristic> c = serv.getCharacteristics();
+                    if (c != null)
+                        for (BluetoothGattCharacteristic ch : c)
+                        {
+                            List<BluetoothGattDescriptor> desc = ch.getDescriptors();
+                            if (desc != null)
+                                for (BluetoothGattDescriptor d : desc) {
+                                    byte[] val = d.getValue();
+                                    if (val!=null && val.length > 1)
+                                    {
+                                        Log.i("NED", new String(val, StandardCharsets.UTF_8));
+                                    }
+                                }
+                        }
+                }
+        }
     }
 
     @Override
     public void OnServiceConnect(BLETransferService service) {
         mService = service;
+
+
     }
 
     @Override
@@ -313,6 +349,8 @@ public class MainFragment extends Fragment implements BLETransferClient {
 
     @Override
     public void OnConnect() {
+
+
 
     }
 
@@ -349,6 +387,7 @@ public class MainFragment extends Fragment implements BLETransferClient {
 
                 String session = DataSegment.UID(txValue);
                 DataSegment segment;
+
                 if (sessionDataList.containsKey(session)) {
                     segment = sessionDataList.get(session);
                     segment.parse(txValue);
@@ -437,11 +476,14 @@ public class MainFragment extends Fragment implements BLETransferClient {
                     tvStatsInfo.setText("scan color - R:"+Integer.toHexString((last_color_value >> 16) & 0xff)+" , G:"+Integer.toHexString((last_color_value >> 8) & 0xff)+" , B:"+Integer.toHexString((last_color_value) & 0xff));
                 }
 
-                int value = Math.max(0, Math.min(2, devstats.buttonMask >> 16));
+                int enter_state = Math.max(0, Math.min(255, devstats.buttonMask >> 16));
 
-                int[] keyValues = new int[]{0,0,0,0};
+                int[] keyValues = new int[]{0,0,0,0,enter_state};
 
-                switch (devstats.buttonMask & 0xffff) {
+                int key = devstats.buttonMask & 0xff;
+                int value = (devstats.buttonMask & 0xff00) >> 8;
+
+                switch (key) {
                     case BLETransferClient.SV_KEY_LEFT:
                         keyValues[0] = value;
                         break;
@@ -463,6 +505,10 @@ public class MainFragment extends Fragment implements BLETransferClient {
                 btLeft.setPressed(keyValues[0] > 0);
                 btRight.setPressed(keyValues[1] > 0);
                 btDown.setPressed(keyValues[3] > 0);
+                btEnter.setPressed(keyValues[4] > 0);
+
+                tvBattery.setText("l:"+devstats.battery_level+" s:"+devstats.battery_status);
+                tvBrightness.setText(""+devstats.brightness);
 
                 tvID.setText("I:"+devstats.compass_inclination +" H:"+devstats.compass_heading +" C:"+devstats.compass_direction);
 
@@ -473,6 +519,11 @@ public class MainFragment extends Fragment implements BLETransferClient {
     @Override
     public void OnColorScanConfig(ColorScanConfiguration stats) {
         //
+    }
+
+    @Override
+    public void OnBLEAdvScan(BLEScanAdvertising stats) {
+
     }
 
 }

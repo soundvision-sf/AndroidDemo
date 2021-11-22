@@ -23,6 +23,8 @@ import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.distribute.Distribute;
 import com.scalefocus.soundvision.ble.BLETransferClient;
 import com.scalefocus.soundvision.ble.BLETransferService;
+import com.scalefocus.soundvision.ble.IBLETransferClient;
+import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;
 import com.scalefocus.soundvision.ble.data.ColorScanConfiguration;
 import com.scalefocus.soundvision.ble.data.DataSegment;
 import com.scalefocus.soundvision.ble.data.DeviceStats;
@@ -60,7 +62,7 @@ import static com.kynetics.uf.android.api.UFServiceCommunicationConstants.SERVIC
 import static com.scalefocus.soundvision.ble.BLETransferService.BleCommand.GetBleParams;
 import static com.scalefocus.soundvision.ble.BLETransferService.startBLETransferService;
 
-public class BaseActivity extends AppCompatActivity implements BLETransferClient {
+public class BaseActivity extends AppCompatActivity implements IBLETransferClient {
 
     private static final String TAG = "BLE.DEMO";
 
@@ -94,11 +96,11 @@ public class BaseActivity extends AppCompatActivity implements BLETransferClient
     class FragmentItem {
         Fragment fragment;
         String navText;
-        BLETransferClient client;
+        IBLETransferClient client;
         public FragmentItem(Fragment fragment, String navText) {
             this.fragment = fragment;
             this.navText = navText;
-            client = (BLETransferClient)fragment;
+            client = (IBLETransferClient)fragment;
         }
     }
 
@@ -125,6 +127,7 @@ public class BaseActivity extends AppCompatActivity implements BLETransferClient
         fragmentList.add( new FragmentItem(new MainFragment(), "Statistics"));
         fragmentList.add( new FragmentItem(new ColorCtrlFragment(), "Colors Ctrl."));
         fragmentList.add( new FragmentItem(new DeviceFirmwareUpgradeFragment(), "FW Upgrade"));
+        fragmentList.add( new FragmentItem(new LocationFragment(), "Location"));
 
         switchTo(fragmentList.get(0));
     }
@@ -132,6 +135,7 @@ public class BaseActivity extends AppCompatActivity implements BLETransferClient
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
+        /*
         switch(event.getAction())
         {
             case MotionEvent.ACTION_DOWN:
@@ -145,7 +149,7 @@ public class BaseActivity extends AppCompatActivity implements BLETransferClient
                     switchToNext(deltaX > 0 ? 1 : -1);
                 }
                 break;
-        }
+        }*/
         return super.onTouchEvent(event);
     }
 
@@ -429,6 +433,11 @@ public class BaseActivity extends AppCompatActivity implements BLETransferClient
     @Override
     public void OnColorScanConfig(ColorScanConfiguration stats) {
         for (FragmentItem f : fragmentList) f.client.OnColorScanConfig(stats);
+    }
+
+    @Override
+    public void OnBLEAdvScan(BLEScanAdvertising stats) {
+        for (FragmentItem f : fragmentList) f.client.OnBLEAdvScan(stats);
     }
 
 
