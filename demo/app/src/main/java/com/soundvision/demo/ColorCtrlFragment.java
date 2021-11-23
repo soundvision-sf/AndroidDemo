@@ -13,7 +13,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.scalefocus.soundvision.ble.BLETransferClient;
 import com.scalefocus.soundvision.ble.BLETransferService;
 import com.scalefocus.soundvision.ble.IBLETransferClient;
 import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;

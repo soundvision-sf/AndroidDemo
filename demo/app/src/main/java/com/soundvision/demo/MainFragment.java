@@ -25,7 +25,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.scalefocus.soundvision.ble.BLETransferClient;
 import com.scalefocus.soundvision.ble.BLETransferService;
 import com.scalefocus.soundvision.ble.IBLETransferClient;
 import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;
@@ -484,20 +483,20 @@ public class MainFragment extends Fragment implements IBLETransferClient {
                 int value = (devstats.buttonMask & 0xff00) >> 8;
 
                 switch (key) {
-                    case BLETransferClient.SV_KEY_LEFT:
+                    case IBLETransferClient.SV_KEY_LEFT:
                         keyValues[0] = value;
                         break;
-                    case BLETransferClient.SV_KEY_RIGHT:
+                    case IBLETransferClient.SV_KEY_RIGHT:
                         keyValues[1] = value;
                         break;
-                    case BLETransferClient.SV_KEY_UP:
+                    case IBLETransferClient.SV_KEY_UP:
                         keyValues[2] = value;
                         break;
-                    case BLETransferClient.SV_KEY_DOWN:
+                    case IBLETransferClient.SV_KEY_DOWN:
                         keyValues[3] = value;
                         break;
 
-                    case BLETransferClient.SV_KEY_ENTER:
+                    case IBLETransferClient.SV_KEY_ENTER:
                         break;
                 }
 

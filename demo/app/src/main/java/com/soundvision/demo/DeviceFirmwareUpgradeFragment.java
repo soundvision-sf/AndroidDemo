@@ -33,7 +33,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.scalefocus.soundvision.ble.BLETransferClient;
 import com.scalefocus.soundvision.ble.BLETransferService;
 import com.scalefocus.soundvision.ble.IBLETransferClient;
 import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;

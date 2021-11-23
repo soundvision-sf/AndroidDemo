@@ -21,7 +21,6 @@ import com.kynetics.uf.android.api.UFServiceConfiguration;
 import com.kynetics.uf.android.api.UFServiceMessage;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.distribute.Distribute;
-import com.scalefocus.soundvision.ble.BLETransferClient;
 import com.scalefocus.soundvision.ble.BLETransferService;
 import com.scalefocus.soundvision.ble.IBLETransferClient;
 import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;
@@ -54,7 +53,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES;
 import static com.kynetics.uf.android.api.UFServiceCommunicationConstants.MSG_AUTHORIZATION_RESPONSE;
