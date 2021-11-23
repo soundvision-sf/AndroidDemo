@@ -46,7 +46,7 @@ public class ColorScanConfiguration extends DataParser{
 
     @Override
     public byte[] toData() {
-        int[] ret = new int[24];
+        int[] ret = new int[24+6];
 
         ret[0] = Integer.reverseBytes(SV_COLOR_SCAN_CONFIG);
         ret[1] = Integer.reverseBytes(black);
@@ -54,6 +54,10 @@ public class ColorScanConfiguration extends DataParser{
         ret[3] = Integer.reverseBytes(gray);
         ret[4] = Integer.reverseBytes(light);
         ret[5] = Integer.reverseBytes(dark);
+
+        for (int i=0; i<6; i++) {
+            ret[i+6] = 0x11223344;
+        }
 
         for (int i=0; i<12; i++) {
             ret[i+12] = Integer.reverseBytes(hueMap[i]);

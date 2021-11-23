@@ -16,7 +16,7 @@ public abstract class DataParser {
 
     public static int readInt8(byte[] arr, int offset)
     {
-        return (arr[offset] & 0xFF);
+        return (byte)(arr[offset] & 0xFF);
     }
 
     public static void writeInt(byte[] arr, int offset, int data)
@@ -45,8 +45,8 @@ public abstract class DataParser {
             int v = bytes[j + offset] & 0xFF;
             ret.append(HEX_ARRAY[v >>> 4]);
             ret.append(HEX_ARRAY[v & 0x0F]);
-            if (j > 0)
-                ret.append(':');
+            //if (j > 0)
+                //ret.append(':');
         }
         return ret.toString();
     }

@@ -23,11 +23,15 @@ import android.view.View;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;
 import com.scalefocus.soundvision.ble.data.ColorScanConfiguration;
 import com.scalefocus.soundvision.ble.data.DeviceStats;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -49,8 +53,12 @@ public class BLETransferService extends Service {
         GetColorPalette,
         SetColorPalette,
         SendControlCode,
-        SendLedValue};
-
+        SendLedValue,
+        SetStateMode,
+        SetVolume,
+        SetMute,
+        PlayAudio
+    };
 
     public final static String SoundVisionDeviceName = "SoundVision";
     private final static String TAG = BLETransferService.class.getSimpleName();
@@ -60,8 +68,10 @@ public class BLETransferService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
+    private Map<UUID, String> DISInfo = new HashMap<>();
+    private boolean DISLoaded = false;
 
-    private static BLETransferClient mClient;
+    private static IBLETransferClient mClient;
 
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -88,10 +98,17 @@ public class BLETransferService extends Service {
     public static final UUID FIRMWARE_REVISON_UUID = UUID.fromString("00002a26-0000-1000-8000-00805f9b34fb");
     public static final UUID DIS_UUID = UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb");
 
+    public static UUID DIS_MANUF_UUID = UUID.fromString("00002a29-0000-1000-8000-00805f9b34fb"); //ScaleFocus
+    public static UUID DIS_MODEL_UUID = UUID.fromString("00002a24-0000-1000-8000-00805f9b34fb");
+    public static UUID DIS_SERIAL_UUID = UUID.fromString("00002a25-0000-1000-8000-00805f9b34fb");//9a938084a36037a4
+    public static UUID DIS_HWREV_UUID = UUID.fromString("00002a26-0000-1000-8000-00805f9b34fb"); //v0.0
+    public static UUID DIS_HWREV_STRING_UUID = UUID.fromString("00002a27-0000-1000-8000-00805f9b34fb");// : MK2.3 - Hardware Revision String
+    public static UUID DIS_SWREV_UUID = UUID.fromString("00002a28-0000-1000-8000-00805f9b34fb"); //e2eff8d694a50b296662f5affce80b79299f0785
+
     public static final UUID IMAGE_TRANSFER_SERVICE_UUID = UUID.fromString("f86b0001-2eae-4bb0-af49-db1d0322d289");
-    public static final UUID RX_CHAR_UUID       = UUID.fromString("f86b0002-2eae-4bb0-af49-db1d0322d289");
-    public static final UUID TX_CHAR_UUID       = UUID.fromString("f86b0003-2eae-4bb0-af49-db1d0322d289");
-    public static final UUID IMG_INFO_CHAR_UUID = UUID.fromString("f86b0004-2eae-4bb0-af49-db1d0322d289");
+        public static final UUID RX_CHAR_UUID       = UUID.fromString("f86b0002-2eae-4bb0-af49-db1d0322d289");
+        public static final UUID TX_CHAR_UUID       = UUID.fromString("f86b0003-2eae-4bb0-af49-db1d0322d289");
+        public static final UUID IMG_INFO_CHAR_UUID = UUID.fromString("f86b0004-2eae-4bb0-af49-db1d0322d289");
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
@@ -104,7 +121,7 @@ public class BLETransferService extends Service {
         return intentFilter;
     }
 
-    public static void startBLETransferService(Context context, BLETransferClient clientInferface) {
+    public static void startBLETransferService(Context context, IBLETransferClient clientInferface) {
         mClient = clientInferface;
         Intent bindIntent = new Intent(context, BLETransferService.class);
         context.bindService(bindIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -151,7 +168,15 @@ public class BLETransferService extends Service {
                     if (ColorScanConfiguration.match(txValue)) {
                         final ColorScanConfiguration stats = new ColorScanConfiguration(txValue);
                         mClient.OnColorScanConfig(stats);
+                    } else
+                    if (BLEScanAdvertising.match(txValue)) {
+                        final BLEScanAdvertising stats = new BLEScanAdvertising(txValue);
+                        mClient.OnBLEAdvScan(stats);
+                        //Log.i("BLE:6", stats.macAddress+"   - rssi : "+stats.rssi);
+
                     }
+
+
                     else {
                         mClient.OnData(txValue);
                     }
@@ -195,6 +220,7 @@ public class BLETransferService extends Service {
                 // Attempts to discover services after successful connection.
                 Log.i(TAG, "Attempting to start service discovery:" +
                         mBluetoothGatt.discoverServices());
+
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 intentAction = ACTION_GATT_DISCONNECTED;
                 mConnectionState = STATE_DISCONNECTED;
@@ -208,6 +234,9 @@ public class BLETransferService extends Service {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.w(TAG, "mBluetoothGatt = " + mBluetoothGatt );
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
+
+
+
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
             }
@@ -238,9 +267,30 @@ public class BLETransferService extends Service {
             Log.w(TAG, "OnCharWrite");
         }
 
+        private void printVal(BluetoothGattCharacteristic d)
+        {
+            byte[] val = d.getValue();
+            if (val!=null && val.length > 1)
+            {
+                Log.i("NED", new String(val, StandardCharsets.UTF_8));
+            }
+        }
+
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             Log.w(TAG, "OnDescWrite!!!");
+
+            BluetoothGattService disService = mBluetoothGatt.getService(DIS_UUID);
+            if (disService != null)
+            {
+                List<BluetoothGattCharacteristic> c = disService.getCharacteristics();
+                if (c != null)
+                    for (BluetoothGattCharacteristic ch : c)
+                    {
+                        readCharacteristic(ch);
+                    }
+            }
+
             if(TX_CHAR_UUID.equals(descriptor.getCharacteristic().getUuid())) {
                 // When the first notification is set we can set the second
                 BluetoothGattService ImageTransferService = mBluetoothGatt.getService(IMAGE_TRANSFER_SERVICE_UUID);
@@ -255,6 +305,12 @@ public class BLETransferService extends Service {
                 BluetoothGattDescriptor descriptor2 = ImgInfoChar.getDescriptor(CCCD);
                 descriptor2.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                 mBluetoothGatt.writeDescriptor(descriptor2);
+
+
+                ///////////////////////
+
+
+
             }
         }
 
@@ -269,17 +325,61 @@ public class BLETransferService extends Service {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
+    private void printVal(BluetoothGattCharacteristic d)
+    {
+        byte[] val = d.getValue();
+        if (val!=null && val.length > 1)
+        {
+            Log.i("NED", d.getUuid().toString() +" : "+ new String(val, StandardCharsets.UTF_8));
+        }
+    }
+
+    private void GetNextDISCharacteristic()
+    {
+        BluetoothGattService disService = mBluetoothGatt.getService(DIS_UUID);
+        if (disService != null)
+        {
+            List<BluetoothGattCharacteristic> c = disService.getCharacteristics();
+            if (c != null) {
+                for (BluetoothGattCharacteristic ch : c) {
+                    if (ch.getValue() == null) {
+                        readCharacteristic(ch);
+                        return;
+                    }
+                }
+                DISLoaded = true;
+            }
+        }
+    }
+
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
-        if (TX_CHAR_UUID.equals(characteristic.getUuid())) {
+        UUID uuid = characteristic.getUuid();
+        if (TX_CHAR_UUID.equals(uuid)) {
             intent.putExtra(EXTRA_DATA, characteristic.getValue());
-        } else if(IMG_INFO_CHAR_UUID.equals(characteristic.getUuid())) {
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        } else if(IMG_INFO_CHAR_UUID.equals(uuid)) {
             intent.putExtra(EXTRA_DATA, characteristic.getValue());
-        } else {
-
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        }  else if(DIS_MANUF_UUID.equals(uuid)
+                || DIS_MODEL_UUID.equals(uuid)
+                || DIS_SERIAL_UUID.equals(uuid)
+                || DIS_HWREV_UUID.equals(uuid)
+                || DIS_HWREV_STRING_UUID.equals(uuid)
+                || DIS_SWREV_UUID.equals(uuid)
+        ) {
+            printVal(characteristic);
+            DISInfo.put(uuid, new String(characteristic.getValue(), StandardCharsets.UTF_8));
         }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        else {
+            printVal(characteristic);
+        }
+
+        if (!DISLoaded)
+            GetNextDISCharacteristic();
+
+
     }
 
     public class LocalBinder extends Binder {
@@ -362,6 +462,7 @@ public class BLETransferService extends Service {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
+
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
         mBluetoothGatt = device.connectGatt(this, true, mGattCallback);
@@ -433,7 +534,7 @@ public class BLETransferService extends Service {
      * @param characteristic The characteristic to read from.
      */
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null || characteristic == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }

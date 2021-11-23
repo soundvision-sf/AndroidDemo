@@ -1,5 +1,7 @@
 package com.scalefocus.soundvision.ble.data;
 
+import android.util.Log;
+
 public class DeviceStats extends DataParser{
 
     private static final int SV_DEVICE_STATS   =    0x82736455;
@@ -22,6 +24,8 @@ public class DeviceStats extends DataParser{
 
     public int battery_level; // 8
     public int battery_status; // 8
+
+    public int brightness;
 
     boolean isValid = false;
 
@@ -52,18 +56,24 @@ public class DeviceStats extends DataParser{
         }
         camera = readInt(data, pos);  pos += 4;
         buttonMask = readInt(data, pos);  pos += 4;
+        //Log.i("NLS:332", "buttonMask:"+buttonMask);
         ledMask = readInt(data, pos);  pos += 4;
-        macAddress = readHex(data, pos, 6);  pos += 6;
+        macAddress = readHex(data, pos, 6);  pos += 8; // 6 bytes + 2 align
 
-        pos += 4; // skip seed
+        data_seed = readInt(data, pos); pos += 4; // skip seed
+        //Log.i("NLS:332", "data_seed:"+data_seed);
+
+        battery_level = readInt8(data, pos);  pos += 1;
+        battery_status = readInt8(data, pos);  pos += 1;
+        pos += 2; // align
 
         compass_inclination = readInt16(data, pos);  pos += 2;
         compass_direction = readInt16(data, pos);  pos += 2;
         compass_heading = readInt16(data, pos);  pos += 2;
         compass_status = readInt8(data, pos);  pos += 1;
+        pos += 5; // align
 
-        battery_level = readInt8(data, pos);  pos += 1;
-        battery_status = readInt8(data, pos);  pos += 1;
+        brightness = readInt(data, pos);  pos += 4;
 
         return true;
     }
