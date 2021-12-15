@@ -3,6 +3,7 @@ package com.soundvision.demo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -127,6 +128,13 @@ public class LocationFragment extends Fragment implements IBLETransferClient, IA
         super.onViewCreated(view, savedInstanceState);
     }
 
+    @Override
+    public void onDestroyView() {
+
+        super.onDestroyView();
+        locator.onDestroy(requireContext());
+    }
+
     private Bitmap GetIcon(int res)
     {
         //return BitmapFactory.decodeResource(getResources(), res);
@@ -216,6 +224,7 @@ public class LocationFragment extends Fragment implements IBLETransferClient, IA
     @Override
     public void OnBLEAdvScan(BLEScanAdvertising stats) {
         if (ffview == null) return;
+        Log.d("HELLO", "OnBLEAdvScan(): stats = "+stats.macAddress);
         locator.addReport(stats);
         PointD loc = locator.getLocation(ffview.selArea.beacons);
         if (loc != null)

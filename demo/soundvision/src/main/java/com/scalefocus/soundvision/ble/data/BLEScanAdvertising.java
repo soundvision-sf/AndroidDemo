@@ -9,6 +9,7 @@ public class BLEScanAdvertising extends DataParser {
     public int major;
     public int rssi = 0;
     public byte[] manufactureData = null;
+    //TODO: why is there no transmitting power
 
     public BLEScanAdvertising(byte[] data)
     {

@@ -1,0 +1,29 @@
+android {
+  signingConfigs {
+    if (project.hasProperty("com.soundvision.signingConfig.release.enabled")
+        && "true".equalsIgnoreCase(project.property("com.soundvision.signingConfig.release.enabled"))) {
+      release {
+        storeFile file(project.property("com.soundvision.signingConfig.release.storeFile"))
+        storePassword project.property("com.soundvision.signingConfig.release.storePassword")
+        keyAlias project.property("com.soundvision.signingConfig.release.keyAlias")
+        keyPassword project.property("com.soundvision.signingConfig.release.keyPassword")
+      }
+
+      debug {
+        storeFile file(project.property("com.soundvision.signingConfig.release.storeFile"))
+        storePassword project.property("com.soundvision.signingConfig.release.storePassword")
+        keyAlias project.property("com.soundvision.signingConfig.release.keyAlias")
+        keyPassword project.property("com.soundvision.signingConfig.release.keyPassword")
+      }
+    }
+  }
+
+  buildTypes {
+    all {
+      if (project.hasProperty("com.soundvision.signingConfig.release.enabled")
+          && "true".equalsIgnoreCase(project.property("com.soundvision.signingConfig.release.enabled"))) {
+        signingConfig signingConfigs.release
+      }
+    }
+  }
+}

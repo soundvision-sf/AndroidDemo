@@ -2,12 +2,12 @@ package com.soundvision.demo.location;
 
 import android.content.Context;
 import android.util.Log;
-import android.util.Pair;
 
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
 import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;
-import com.soundvision.demo.altbeacon.AltBeaconApp;
+import com.soundvision.demo.altbeacon.AltBeaconAppKotlin;
+import com.soundvision.demo.altbeacon.CustomRangeNotifier;
 import com.soundvision.demo.altbeacon.IAltBeaconEventListener;
 import com.soundvision.demo.location.ffgeojson.PointD;
 import com.soundvision.demo.location.flat.BeaconProp;
@@ -15,13 +15,12 @@ import com.soundvision.demo.location.ibeacon.IBeacon;
 import com.soundvision.demo.location.internalpositioning.InternalPositioning;
 
 import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.Region;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.RealVector;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -44,14 +43,27 @@ public class BLELocator {
 
     InternalPositioning mInternalPositioning = new InternalPositioning();
 
-    AltBeaconApp altBeacon;
+    AltBeaconAppKotlin altBeacon;
     public IAltBeaconEventListener listener;
     public List<BeaconProp> beaconsPropListFilter;
 
-    androidx.lifecycle.Observer<Collection<Beacon>> observer = new androidx.lifecycle.Observer<Collection<Beacon>>() {
+
+    CustomRangeNotifier observer = new CustomRangeNotifier() {
+
         @Override
-        public void onChanged(Collection<Beacon> beacons) {
+        public void didRangeBeaconsInRegion(@Nullable Collection<Beacon> beacons, @Nullable Region region) {
+
             if (listener == null) return;
+
+            //added by me
+            //-->
+            Log.d("HELLO", "Ranged: " + beacons.size() + " beacons");
+            for (Beacon beacon : beacons) {
+                Log.d("HELLO", beacon.toString() + " about " + beacon.getDistance() + " meters away");
+                Log.d("HELLO", "runningAverage=" + beacon.getRunningAverageRssi() + ", nPackets=" + beacon.getMeasurementCount() + ", mac=" + beacon.getBluetoothAddress() + ", name=" + beacon.getBluetoothName());
+            }
+            //<--
+
             if (beacons.size() > 2) {
 
                 List<BeaconProp> latest = new ArrayList<>();
@@ -84,6 +96,7 @@ public class BLELocator {
 
 // the answer
                     double[] calculatedPosition = optimum.getPoint().toArray();
+                    Log.d("HELLO", "onChanged(): position=" + calculatedPosition[0] + ", " + calculatedPosition[1]);
 
                     if (calculatedPosition != null)
                         listener.OnLocationUpdate(new PointD(calculatedPosition[0], calculatedPosition[1]));
@@ -101,8 +114,12 @@ public class BLELocator {
     };
 
     public BLELocator(Context ctx) {
-        altBeacon = new AltBeaconApp();
+        altBeacon = AltBeaconAppKotlin.Companion.getInstance();
         altBeacon.init(ctx, observer);
+    }
+
+    public void onDestroy(Context ctx) {
+        altBeacon.onDestroy(ctx);
     }
 
     public IBeacon getBeacon(String mac)
@@ -150,8 +167,10 @@ public class BLELocator {
                 if (bp != null) {
                     beacons.add(b);
                     bp.calcRSSI(b.rssi);
+                    //TODO: why is this -59, it should be different depending on beacon?
                     bp.distance = Math.pow(10d, ((double) (-59) - (bp.getRSSI())) / (10 * 2))*100;//(double)(10000 ^ ((-59 - (b.rssi)) / (10000 * 2))) / 100.0;
                     latest.add(bp);
+                    //TODO: it seems like three most resent ones are taken, instead of three closest ones maybe?
                     if (latest.size() > 3) break;
                 }
             }
