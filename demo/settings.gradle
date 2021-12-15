@@ -1,3 +1,4 @@
 include ':soundvision'
 rootProject.name='demo'
 include ':app'
+include ':altbeacon'
