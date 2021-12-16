@@ -182,7 +182,19 @@ public class CycledLeScannerForLollipop extends CycledLeScanner {
                           mBeaconManager.getBeaconParsers());
         } else {
             LogManager.d(TAG, "starting a scan in SCAN_MODE_LOW_LATENCY");
-            settings = (new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)).build();
+            //--> Change
+            //settings = (new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)).build();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                    .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                    .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+                    .setNumOfMatches(ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT)
+                    .build();
+            } else {
+                settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+            }
+            //<--
+
             // We create scan filters that match so that we can detect
             // beacons in foreground mode even if the screen is off.  This is a necessary workaround
             // for a change in Android 8.1 that blocks scan results when the screen is off unless
@@ -211,8 +223,13 @@ public class CycledLeScannerForLollipop extends CycledLeScanner {
                     } else {
                         LogManager.d(TAG, "Using an empty scan filter since this is 8.1+ on Non-Samsung");
                     }
+                    //--> Change
                     // The wildcard filter matches everything.
-                    filters = new ScanFilterUtils().createWildcardScanFilters();
+//                    filters = new ScanFilterUtils().createWildcardScanFilters();
+                    LogManager.d(TAG, "Override: Not going to use an empty scan filter!");
+                    filters = new ScanFilterUtils().createScanFiltersForBeaconParsers(
+                        mBeaconManager.getBeaconParsers());
+                    //<--
                 }
             }
             else {
