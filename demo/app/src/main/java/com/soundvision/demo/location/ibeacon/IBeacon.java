@@ -28,6 +28,8 @@ import android.util.Log;
 
 import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;
 
+import org.altbeacon.beacon.Beacon;
+
 /**
 * The <code>IBeacon</code> class represents a single hardware iBeacon detected by 
 * an Android device.
@@ -210,6 +212,16 @@ public class IBeacon
         iBeacon.minor = adv.minor;//(scanData[startByte+22] & 0xff) * 0x100 + (scanData[startByte+23] & 0xff);
         iBeacon.txPower = -59;//(int)scanData[startByte+24]; // this one is signed
         iBeacon.rssi = adv.rssi;
+        return iBeacon;
+    }
+    public static IBeacon fromAltBeacon(Beacon beacon)
+    {
+        IBeacon iBeacon = new IBeacon();
+        iBeacon.mac = beacon.getBluetoothAddress();
+        iBeacon.major = Integer.parseInt(beacon.getId2().toString());//(scanData[startByte+20] & 0xff) * 0x100 + (scanData[startByte+21] & 0xff);
+        iBeacon.minor = Integer.parseInt(beacon.getId3().toString());//(scanData[startByte+22] & 0xff) * 0x100 + (scanData[startByte+23] & 0xff);
+        iBeacon.txPower = beacon.getTxPower();//(int)scanData[startByte+24]; // this one is signed
+        iBeacon.rssi = (int) beacon.getRunningAverageRssi();
         return iBeacon;
     }
     /**

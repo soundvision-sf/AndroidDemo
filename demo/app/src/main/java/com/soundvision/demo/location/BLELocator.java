@@ -57,10 +57,21 @@ public class BLELocator {
 
             //added by me
             //-->
+            List<IBeacon> newList = new ArrayList<IBeacon>();
             Log.d("HELLO", "Ranged: " + beacons.size() + " beacons");
             for (Beacon beacon : beacons) {
                 Log.d("HELLO", beacon.toString() + " about " + beacon.getDistance() + " meters away");
                 Log.d("HELLO", "runningAverage=" + beacon.getRunningAverageRssi() + ", nPackets=" + beacon.getMeasurementCount() + ", mac=" + beacon.getBluetoothAddress() + ", name=" + beacon.getBluetoothName());
+                newList.add(IBeacon.fromAltBeacon(beacon));
+            }
+            boolean internal = true;
+
+            if (internal) {
+                PointD point = mInternalPositioning.getLocationWithBeacons(newList, beaconsPropListFilter);
+                if (point != null) {
+                    Log.d("HELLO", "point.X="+point.X+", point.Y="+point.Y);
+                    listener.OnLocationUpdate(point);
+                }
             }
             //<--
 
@@ -71,13 +82,16 @@ public class BLELocator {
                 for (Beacon beacon : beacons) {
                     for (BeaconProp bp : beaconsPropListFilter)
                     {
-                        if (bp.mac.toLowerCase(Locale.ROOT).equals(beacon.getBluetoothAddress().toLowerCase(Locale.ROOT).replace(":", ""))) {
+//                        if (bp.mac.toLowerCase(Locale.ROOT).equals(beacon.getBluetoothAddress().toLowerCase(Locale.ROOT).replace(":", ""))) {
+                        if (bp.mac.toLowerCase(Locale.ROOT).equals(beacon.getIdentifiers().get(0).toString().toLowerCase())) {
+                            Log.d("HELLO", "bp.mac="+bp.mac.toLowerCase(Locale.ROOT));
                             bp.distance = beacon.getDistance();
                             latest.add(bp);
                             break;
                         }
                     }
                 }
+                Log.d("HELLO", "latest.size() = "+latest.size());
 
                 if (latest.size() > 2) {
                     double[][] positions = new double[latest.size()][2];

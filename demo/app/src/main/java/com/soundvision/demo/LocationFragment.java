@@ -114,7 +114,7 @@ public class LocationFragment extends Fragment implements IBLETransferClient, IA
 
         try {
             //InputStream wStream = getContext().getAssets().open("Infinity8.json");
-            InputStream wStream = getContext().getAssets().open("i8.area");
+            InputStream wStream = getContext().getAssets().open("5Bsquare.json");
             loadFromJsonString(wStream);
 
         } catch (IOException e) {

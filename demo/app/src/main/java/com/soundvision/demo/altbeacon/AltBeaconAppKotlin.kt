@@ -125,7 +125,8 @@ class AltBeaconAppKotlin private constructor() {
 		// a UUID like Identifier.parse("2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6")
 		//region = Region("radius-uuid", null, null, null)
 		//val region = Region("all-beacons-region", null, null, null)
-		val region = Region("all-beacons-region", Identifier.parse("417192b8-533d-4c3d-b5f3-d56a4be8fdce"), null, null)
+		//val region = Region("all-beacons-region", Identifier.parse("417192b8-533d-4c3d-b5f3-d56a4be8fdce"), null, null)
+		val region = Region("all-beacons-region", null, null, null)
 		currentRegion = region
 		beaconManager.startMonitoring(region)
 		beaconManager.startRangingBeacons(region)

@@ -92,6 +92,8 @@ public class InternalPositioning
                 if (beaconStats.rssi.size() > 10)
                     beaconStats.rssi.remove(beaconStats.rssi.size() - 1);
 
+                //NOTE: it seems like we need to have a beacon three times in a row if there were many misses (> 3) before,
+                // .. before we can consider it valid.
                 if (beaconMisses.misses > 1)
                 {
                     int misses = beaconMisses.misses;
@@ -169,6 +171,7 @@ public class InternalPositioning
             }
         }
 
+        // NOTE: we don't change average if there was a miss.
         for (HashMap.Entry<String, BeaconMisses> entry : mBeaconsMisses.entrySet())
         {
             String key = entry.getKey();
@@ -227,6 +230,7 @@ public class InternalPositioning
                 continue;
 
             String major = mBeaconsStats.get(mac).major;
+            //NOTE: it seems like we don't use beacons from other floors for triangulation
             if (floorStr.equals(major))
             {
                 if (finalSorted.size() == 2)
@@ -242,12 +246,16 @@ public class InternalPositioning
                     double distB1B2 = calculateDistance(xB1, yB1, xB2, yB2);
                     double distB1Bi = calculateDistance(xB1, yB1, xBi, yBi);
                     double distB2Bi = calculateDistance(xB2, yB2, xBi, yBi);
+                    //TODO: B: what is this testing? it seems like the idea was to test whether they are not on the same line
+                    // .. but it doesn't seem like it's doing what it's supposed to be doing.
                     double testValue = (((distB2Bi*distB2Bi)-(distB1Bi*distB1Bi)+(distB1B2*distB1B2))/(-2.0*distB1B2));
 
                     //if (determinant != 0)
                     if (testValue <= 0)
                         finalSorted.add(mac);
                 }
+                //NOTE: since we don't override the average value when there's a miss, it seems like we will take into account
+                // .. even beacons for which there was a miss previously... though, that's ok...
                 else finalSorted.add(mac);
             }
         }

@@ -1,0 +1,177 @@
+[
+  {
+    "beacons": [],
+    "floors": [
+      {
+        "zones": [
+          {
+            "id": 0,
+            "name": null,
+            "type": "Room",
+            "uuid": null,
+            "visible": true,
+            "features": [
+              {
+                "type": "Zone",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      [
+                        6.6666664017571451,
+                        3.3333332008785725,
+                        0.0
+                      ],
+                      [
+                        546.66664494408587,
+                        3.3333332008785725,
+                        0.0
+                      ],
+                      [
+                        546.66664494408587,
+                        543.33331174320733,
+                        0.0
+                      ],
+                      [
+                        6.6666664017571451,
+                        543.33331174320733,
+                        0.0
+                      ],
+                      [
+                        6.6666664017571451,
+                        3.3333332008785725,
+                        0.0
+                      ]
+                    ]
+                  ],
+                  "type": "Polygon"
+                }
+              }
+            ],
+            "bounds": {
+              "Location": {
+                "IsEmpty": false,
+                "X": 0.0,
+                "Y": 0.0
+              },
+              "Size": "540, 540",
+              "X": 0.0,
+              "Y": 0.0,
+              "Width": 540.0,
+              "Height": 540.0,
+              "Left": 0.0,
+              "Top": 0.0,
+              "Right": 540.0,
+              "Bottom": 540.0,
+              "IsEmpty": false
+            }
+          }
+        ],
+        "rooms": [],
+        "beacons": [
+          {
+            "type": "Beacon",
+            "properties": {},
+            "geometry": {
+              "coordinates": [
+                27.391303921917672,
+                20.869564892889656,
+                0.0
+              ],
+              "type": "Point"
+            }
+          },
+          {
+            "type": "Beacon",
+            "properties": {},
+            "geometry": {
+              "coordinates": [
+                537.39129599190858,
+                14.347825863861637,
+                0.0
+              ],
+              "type": "Point"
+            }
+          },
+          {
+            "type": "Beacon",
+            "properties": {
+              "fid": "417192b8-533d-4c3d-b5f3-d56a4be8fdce"
+            },
+            "geometry": {
+              "coordinates": [
+                360.69564379771418,
+                530.86955696288055,
+                0.0
+              ],
+              "type": "Point"
+            }
+          },
+          {
+            "type": "Beacon",
+            "properties": {
+              "fid": "f03441f8-cc56-4802-bec1-7c7bb2cbfdba"
+            },
+            "geometry": {
+              "coordinates": [
+                0.65217366966724,
+                536.086948186103,
+                0.0
+              ],
+              "type": "Point"
+            }
+          },
+          {
+            "type": "Beacon",
+            "properties": {},
+            "geometry": {
+              "coordinates": [
+                270.0,
+                270.0,
+                0.0
+              ],
+              "type": "Point"
+            }
+          }
+        ],
+        "routeNodes": [],
+        "routeLinks": [],
+        "POI": [],
+        "id": 0,
+        "lat": 0.0,
+        "lon": 0.0,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "filter1": null,
+        "filter2": null,
+        "lowPassFilterX": null,
+        "lowPassFilterY": null,
+        "nthMeasurement": 0,
+        "number": null,
+        "uuid": null,
+        "widthInCentimeters": 0,
+        "widthInPixels": 0,
+        "heightInPixels": 0,
+        "visible": true
+      }
+    ],
+    "id": 0,
+    "lat": 0.0,
+    "lon": 0.0,
+    "angle": 0.0,
+    "scale": 0.11999999731779099,
+    "mapOffset": 0.0,
+    "name": null,
+    "singleRoomMajor": 0,
+    "uuid": null,
+    "desc": {
+      "type": "feature",
+      "properties": {},
+      "geometry": {
+        "coordinates": null,
+        "type": "Polygon"
+      }
+    }
+  }
+]
