@@ -14,7 +14,6 @@ import com.soundvision.demo.BaseActivity
 import com.soundvision.demo.R
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
-import org.altbeacon.beacon.Identifier
 import org.altbeacon.beacon.MonitorNotifier
 import org.altbeacon.beacon.RangeNotifier
 import org.altbeacon.beacon.Region
@@ -147,6 +146,10 @@ class AltBeaconAppKotlin private constructor() {
 		this.customRangeNotifier = customRangeNotifier
 		beaconManager.addMonitorNotifier(centralMonitoringNotifier)
 		beaconManager.addRangeNotifier(centralRangingNotifier)
+
+		//added later
+		BeaconManager.setRssiFilterImplClass(CustomFusionRssiFilter::class.java)
+		CustomFusionRssiFilter.setSampleExpirationMilliseconds(5000L)
 	}
 
 	fun onDestroy(ctx: Context?) {
