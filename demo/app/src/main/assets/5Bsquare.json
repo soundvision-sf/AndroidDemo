@@ -71,11 +71,13 @@
         "beacons": [
           {
             "type": "Beacon",
-            "properties": {},
+            "properties": {
+              "fid": "DC0D45A270B5"
+            },
             "geometry": {
               "coordinates": [
-                27.391303921917672,
-                20.869564892889656,
+                0.0,
+                0.0,
                 0.0
               ],
               "type": "Point"
@@ -83,11 +85,13 @@
           },
           {
             "type": "Beacon",
-            "properties": {},
+            "properties": {
+              "fid": "DC0D6F933B57"
+            },
             "geometry": {
               "coordinates": [
-                537.39129599190858,
-                14.347825863861637,
+                240.0,
+                0.0,
                 0.0
               ],
               "type": "Point"
@@ -110,12 +114,12 @@
           {
             "type": "Beacon",
             "properties": {
-              "fid": "f03441f8-cc56-4802-bec1-7c7bb2cbfdba"
+              "fid": "DC0DA38C7DB6"
             },
             "geometry": {
               "coordinates": [
-                0.65217366966724,
-                536.086948186103,
+                0.0,
+                70.0,
                 0.0
               ],
               "type": "Point"

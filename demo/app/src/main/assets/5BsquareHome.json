@@ -1,0 +1,487 @@
+[
+  {
+    "beacons": [],
+    "floors": [
+      {
+        "zones": [
+          {
+            "id": 0,
+            "name": null,
+            "type": "Room",
+            "uuid": null,
+            "visible": true,
+            "features": [
+              {
+                "type": "Zone",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      [
+                        6.6666664017571451,
+                        3.3333332008785725,
+                        0.0
+                      ],
+                      [
+                        546.66664494408587,
+                        3.3333332008785725,
+                        0.0
+                      ],
+                      [
+                        546.66664494408587,
+                        543.33331174320733,
+                        0.0
+                      ],
+                      [
+                        6.6666664017571451,
+                        543.33331174320733,
+                        0.0
+                      ],
+                      [
+                        6.6666664017571451,
+                        3.3333332008785725,
+                        0.0
+                      ]
+                    ]
+                  ],
+                  "type": "Polygon"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      -100.0,
+                      -200.0,
+                      0.0
+                    ],
+                    [
+                      -100.0,
+                      700.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      0.0,
+                      -200.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      700.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      100.0,
+                      -200.0,
+                      0.0
+                    ],
+                    [
+                      100.0,
+                      700.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      200.0,
+                      -200.0,
+                      0.0
+                    ],
+                    [
+                      200.0,
+                      700.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      300.0,
+                      -200.0,
+                      0.0
+                    ],
+                    [
+                      300.0,
+                      700.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      400.0,
+                      -200.0,
+                      0.0
+                    ],
+                    [
+                      400.0,
+                      700.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      500.0,
+                      -200.0,
+                      0.0
+                    ],
+                    [
+                      500.0,
+                      700.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      600.0,
+                      -200.0,
+                      0.0
+                    ],
+                    [
+                      600.0,
+                      700.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      -200.0,
+                      -100.0,
+                      0.0
+                    ],
+                    [
+                      700.0,
+                      -100.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      -200.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      700.0,
+                      0.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      -200.0,
+                      100.0,
+                      0.0
+                    ],
+                    [
+                      700.0,
+                      100.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      -200.0,
+                      200.0,
+                      0.0
+                    ],
+                    [
+                      700.0,
+                      200.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      -200.0,
+                      300.0,
+                      0.0
+                    ],
+                    [
+                      700.0,
+                      300.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      -200.0,
+                      400.0,
+                      0.0
+                    ],
+                    [
+                      700.0,
+                      400.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      -200.0,
+                      500.0,
+                      0.0
+                    ],
+                    [
+                      700.0,
+                      500.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              },
+              {
+                "type": "Obstacle",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      -200.0,
+                      600.0,
+                      0.0
+                    ],
+                    [
+                      700.0,
+                      600.0,
+                      0.0
+                    ]
+                  ],
+                  "type": "LineString"
+                }
+              }
+            ],
+            "bounds": {
+              "Location": {
+                "IsEmpty": false,
+                "X": 0.0,
+                "Y": 0.0
+              },
+              "Size": "540, 540",
+              "X": 0.0,
+              "Y": 0.0,
+              "Width": 540.0,
+              "Height": 540.0,
+              "Left": 0.0,
+              "Top": 0.0,
+              "Right": 540.0,
+              "Bottom": 540.0,
+              "IsEmpty": false
+            }
+          }
+        ],
+        "rooms": [],
+        "beacons": [
+          {
+            "type": "Beacon",
+            "properties": {
+              "fid": "DC0D45A270B5"
+            },
+            "geometry": {
+              "coordinates": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "type": "Point"
+            }
+          },
+          {
+            "type": "Beacon",
+            "properties": {
+              "fid": ""
+            },
+            "geometry": {
+              "coordinates": [
+                400.0,
+                0.0,
+                0.0
+              ],
+              "type": "Point"
+            }
+          },
+          {
+            "type": "Beacon",
+            "properties": {
+              "fid": "417192b8-533d-4c3d-b5f3-d56a4be8fdce"
+            },
+            "geometry": {
+              "coordinates": [
+                140.0,
+                0.0,
+                0.0
+              ],
+              "type": "Point"
+            }
+          },
+          {
+            "type": "Beacon",
+            "properties": {
+              "fid": "f03441f8-cc56-4802-bec1-7c7bb2cbfdba"
+            },
+            "geometry": {
+              "coordinates": [
+                0.0,
+                285.0,
+                0.0
+              ],
+              "type": "Point"
+            }
+          },
+          {
+            "type": "Beacon",
+            "properties": {
+              "fid": "DC0D6F933B57"
+            },
+            "geometry": {
+              "coordinates": [
+                500.0,
+                330.0,
+                0.0
+              ],
+              "type": "Point"
+            }
+          }
+        ],
+        "routeNodes": [],
+        "routeLinks": [],
+        "POI": [],
+        "id": 0,
+        "lat": 0.0,
+        "lon": 0.0,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "filter1": null,
+        "filter2": null,
+        "lowPassFilterX": null,
+        "lowPassFilterY": null,
+        "nthMeasurement": 0,
+        "number": null,
+        "uuid": null,
+        "widthInCentimeters": 0,
+        "widthInPixels": 0,
+        "heightInPixels": 0,
+        "visible": true
+      }
+    ],
+    "id": 0,
+    "lat": 0.0,
+    "lon": 0.0,
+    "angle": 0.0,
+    "scale": 0.11999999731779099,
+    "mapOffset": 0.0,
+    "name": null,
+    "singleRoomMajor": 0,
+    "uuid": null,
+    "desc": {
+      "type": "feature",
+      "properties": {},
+      "geometry": {
+        "coordinates": null,
+        "type": "Polygon"
+      }
+    }
+  }
+]
