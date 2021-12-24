@@ -214,14 +214,17 @@ public class IBeacon
         iBeacon.rssi = adv.rssi;
         return iBeacon;
     }
-    public static IBeacon fromAltBeacon(Beacon beacon)
+    public static IBeacon fromAltBeacon(Beacon beacon, boolean saveMacAddress)
     {
         IBeacon iBeacon = new IBeacon();
-        iBeacon.mac = beacon.getBluetoothAddress();
+        //iBeacon.mac = beacon.getBluetoothAddress().replace(":", "");
+        //TODO: delete this, uncomment aboce line.
+        iBeacon.mac = saveMacAddress ? beacon.getBluetoothAddress().replace(":", "") : beacon.getId1().toString().toLowerCase();
         iBeacon.major = Integer.parseInt(beacon.getId2().toString());//(scanData[startByte+20] & 0xff) * 0x100 + (scanData[startByte+21] & 0xff);
         iBeacon.minor = Integer.parseInt(beacon.getId3().toString());//(scanData[startByte+22] & 0xff) * 0x100 + (scanData[startByte+23] & 0xff);
         iBeacon.txPower = beacon.getTxPower();//(int)scanData[startByte+24]; // this one is signed
         iBeacon.rssi = (int) beacon.getRunningAverageRssi();
+        iBeacon.accuracy = beacon.getDistance();
         return iBeacon;
     }
     /**

@@ -4,15 +4,19 @@ import android.graphics.PointF;
 import android.util.Log;
 import android.util.Pair;
 
+import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
+import com.lemmingapex.trilateration.TrilaterationFunction;
 import com.soundvision.demo.location.LowPassFilter;
 import com.soundvision.demo.location.MeasuredFilter;
 import com.soundvision.demo.location.ffgeojson.PointD;
 import com.soundvision.demo.location.flat.BeaconProp;
 import com.soundvision.demo.location.ibeacon.IBeacon;
 
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
+import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -23,7 +27,6 @@ import java.util.Map;
 /**
  * Created by galen.georgiev on 8.11.2017 г..
  */
-
 public class InternalPositioning
 {
     private static final String TAG = InternalPositioning.class.getSimpleName();
@@ -85,6 +88,7 @@ public class InternalPositioning
 
             if (beaconMisses != null)
             {
+                //NOTE: it seems like this code won't be executed at all, ever.
                 int lowPassRSSI = Math.abs(beacon.getRssi());
 
                 beaconStats.rssi.add(0, lowPassRSSI);
@@ -167,6 +171,7 @@ public class InternalPositioning
                 tempBeaconStats.lowest = Math.abs(beacon.getRssi());
                 tempBeaconStats.rssi.add(Math.abs(beacon.getRssi()));
                 tempBeaconStats.mac = mac;
+                tempBeaconStats.distance =  beacon.getAccuracy();
                 mBeaconsStats.put(mac, tempBeaconStats);
             }
         }
@@ -223,6 +228,7 @@ public class InternalPositioning
         String floorStr = String.valueOf(mFloor);
         for (String mac : sortedRSSIs)
         {
+            //NOTE: I think it would be better if we use more than 3 beacons. e.g. closest ones and most recent ones...
             if (finalSorted.size() >= 3)
                 break;
 
@@ -264,6 +270,13 @@ public class InternalPositioning
         {
             Log.e(TAG, "No three beacons found, which not lie on one line");
             return null;
+        }
+
+        //TODO: make this a constant
+        //NOTE: added later
+        boolean customLogic = false;
+        if (customLogic) {
+            return getTriangulationZoneCustom(venueBeacons, sortedRSSIs);
         }
 
         List<BeaconData> beaconsData = new ArrayList<>();
@@ -326,6 +339,57 @@ public class InternalPositioning
     private double calculateDeterminant(double x1, double y1, double x2, double y2, double x3, double y3)
     {
         return (x1 * y2) + (x2 * y3) + (x3 * y1) - (x1 - y3) - (x3 * y2) - (x2 * y1);
+    }
+
+    private List<PointD> getTriangulationZoneCustom(HashMap<String, BeaconCoordinates> venueBeacons,List<String> sortedRSSIs) {
+        //TODO: make this a constant. change it to a smaller value
+        final double MIN_BEACON_DISTANCE = 10.0;
+        //get those which are closer than some threshold (in meters)
+        List<BeaconProp> finalSorted = new ArrayList<>();
+        for (String mac : sortedRSSIs) {
+            final BeaconCoordinates tempBeaconCoordinates = venueBeacons.get(mac);
+            if (tempBeaconCoordinates == null) {
+                continue;
+            }
+
+            final BeaconStats tempBeaconStats = mBeaconsStats.get(mac);
+            if (tempBeaconStats!=null && tempBeaconStats.distance < MIN_BEACON_DISTANCE) {
+                BeaconProp beaconProp = new BeaconProp(tempBeaconCoordinates.x, tempBeaconCoordinates.y, mac);
+                beaconProp.distance = tempBeaconStats.distance;
+                Log.d("HELLO", "getTriangulationZoneCustom(): mac="+mac+", dist="+beaconProp.distance);
+                finalSorted.add(beaconProp);
+            }
+        }
+
+        if (finalSorted.size() < 3) {
+            //TODO: null may not be good here
+            return null;
+        }
+
+        double[][] positions = new double[finalSorted.size()][2];
+        double[] distances = new double[finalSorted.size()];
+
+        int i = 0;
+        for (BeaconProp beaconProp : finalSorted) {
+            distances[i] = beaconProp.distance * 100;//// Math.pow(10d, ((double) (-59) - (b.getRSSI())) / (10 * 2))*100;//(double)(10000 ^ ((-59 - (b.rssi)) / (10000 * 2))) / 100.0;
+            positions[i][0] = beaconProp.x;
+            positions[i][1] = beaconProp.y;
+            i++;
+        }
+
+        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
+        LeastSquaresOptimizer.Optimum optimum = solver.solve();
+
+        //the answer
+        double[] calculatedPosition = optimum.getPoint().toArray();
+
+        if (calculatedPosition != null) {
+            PointD point = new PointD(calculatedPosition[0], calculatedPosition[1]);
+            return new ArrayList<>(Arrays.asList(point, point, point, point));
+        } else {
+            //TODO: null may not be good here
+            return null;
+        }
     }
 
     private List<PointD> getTriangulationZone(List<BeaconData> beaconsData)

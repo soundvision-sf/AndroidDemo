@@ -15,4 +15,5 @@ class BeaconStats
     public double average;
     public int lowest;
     public List<Integer> rssi = new ArrayList<>();
+    public double distance;
 }
