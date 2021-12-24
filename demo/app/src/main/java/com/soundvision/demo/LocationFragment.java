@@ -114,7 +114,7 @@ public class LocationFragment extends Fragment implements IBLETransferClient, IA
 
         try {
             //InputStream wStream = getContext().getAssets().open("Infinity8.json");
-            InputStream wStream = getContext().getAssets().open("5Bsquare.json");
+            InputStream wStream = getContext().getAssets().open("5BsquareHome.json");
             loadFromJsonString(wStream);
 
         } catch (IOException e) {
@@ -269,12 +269,10 @@ public class LocationFragment extends Fragment implements IBLETransferClient, IA
     @Override
     public void onStart() {
         super.onStart();
-
-
     }
 
     @Override
-    public void OnLocationUpdate(PointD pt) {
+    public void onLocationUpdate(PointD pt) {
         if (ffview == null) return;
         ffview.setUserLocation(pt, pt != null);
     }
