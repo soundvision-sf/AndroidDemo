@@ -157,8 +157,8 @@ public class FFView extends View {
 
         fillUser2 = paintFill(0xff000000);
 
-        fillUser1 = paintFill(0xffa0a0a0);
-        fillUserWarn = paintFill(0xffff4020);
+        fillUser1 = paintFill(0xffa0a0ff);
+        fillUserWarn = paintFill(0xffff40ff);
 
     }
 
@@ -454,8 +454,8 @@ public class FFView extends View {
 
         drawOffset = new PointD(0, 0);
 
-        canvas.drawLine(width / 2.0f, 0.0f, width / 2.0f, height, penGrid);
-        canvas.drawLine(0, height / 2.0f, width, height / 2.0f, penGrid);
+//        canvas.drawLine(width / 2.0f, 0.0f, width / 2.0f, height, penGrid);
+//        canvas.drawLine(0, height / 2.0f, width, height / 2.0f, penGrid);
 
         for (VenueProp v : items)
         {
@@ -529,7 +529,7 @@ public class FFView extends View {
 
         if (feature.type.equals(Feature.Obstacle))
         {
-            g.drawPath(gp, fillObstacle);
+            g.drawPath(gp, penGrid);
         }
         else
             g.drawPath(gp, polyBrush);
@@ -557,7 +557,7 @@ public class FFView extends View {
         //g.drawLine(0, 0, 678, 678, linePen);
         for (int i = 0; i < pt.length-1; i++)
         {
-            g.drawLine(pt[i].x ,pt[i].y, pt[i+1].x, pt[i+1].y, linePen);
+            g.drawLine(pt[i].x ,pt[i].y, pt[i+1].x, pt[i+1].y, penGrid);
         }
       //  g.drawLines(lines, linePen);
       
