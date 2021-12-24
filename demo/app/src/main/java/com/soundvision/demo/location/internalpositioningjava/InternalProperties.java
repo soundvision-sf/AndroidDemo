@@ -1,4 +1,4 @@
-package com.soundvision.demo.location.internalpositioning;
+package com.soundvision.demo.location.internalpositioningjava;
 
 /**
  * Created by galen.georgiev on 8.11.2017 г..

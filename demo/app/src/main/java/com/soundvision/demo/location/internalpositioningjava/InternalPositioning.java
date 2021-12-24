@@ -1,4 +1,4 @@
-package com.soundvision.demo.location.internalpositioning;
+package com.soundvision.demo.location.internalpositioningjava;
 
 import android.graphics.PointF;
 import android.util.Log;

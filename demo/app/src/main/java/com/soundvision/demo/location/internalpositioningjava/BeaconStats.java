@@ -1,4 +1,4 @@
-package com.soundvision.demo.location.internalpositioning;
+package com.soundvision.demo.location.internalpositioningjava;
 
 import java.util.ArrayList;
 import java.util.List;
