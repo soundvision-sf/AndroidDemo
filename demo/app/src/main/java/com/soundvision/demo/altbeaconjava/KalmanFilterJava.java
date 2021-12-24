@@ -1,4 +1,4 @@
-package com.soundvision.demo.altbeacon;
+package com.soundvision.demo.altbeaconjava;
 
 /**
  * Simple implementation of the Kalman Filter for 1D data.
@@ -13,7 +13,7 @@ package com.soundvision.demo.altbeacon;
  * @author Andreas Eppler
  *
  */
-public class KalmanFilter {
+public class KalmanFilterJava {
 
     private double A = 1;
     private double B = 0;
@@ -34,7 +34,7 @@ public class KalmanFilter {
      * @param B Control vector
      * @param C Measurement vector
      */
-    public KalmanFilter(double R, double Q, double A, double B , double C){
+    public KalmanFilterJava(double R, double Q, double A, double B , double C){
         this.R = R;
         this.Q = Q;
 
@@ -52,7 +52,7 @@ public class KalmanFilter {
      * @param R Process noise
      * @param Q Measurement noise
      */
-    public KalmanFilter(double R, double Q){
+    public KalmanFilterJava(double R, double Q){
         this.R = R;
         this.Q = Q;
 

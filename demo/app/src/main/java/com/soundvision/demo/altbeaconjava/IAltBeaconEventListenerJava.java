@@ -1,7 +1,7 @@
-package com.soundvision.demo.altbeacon;
+package com.soundvision.demo.altbeaconjava;
 
 import com.soundvision.demo.location.ffgeojson.PointD;
 
-public interface IAltBeaconEventListener {
+public interface IAltBeaconEventListenerJava {
     void OnLocationUpdate(PointD pt);
 }

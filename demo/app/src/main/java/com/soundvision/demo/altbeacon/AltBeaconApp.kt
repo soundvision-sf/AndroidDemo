@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import com.soundvision.demo.BaseActivity
 import com.soundvision.demo.R
+import com.soundvision.demo.altbeaconjava.CustomFusionRssiFilter
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.MonitorNotifier
@@ -19,7 +20,7 @@ import org.altbeacon.beacon.RangeNotifier
 import org.altbeacon.beacon.Region
 import org.altbeacon.beacon.service.RangedBeacon
 
-class AltBeaconAppKotlin private constructor() {
+class AltBeaconApp private constructor() {
 
 	companion object {
 
@@ -27,12 +28,12 @@ class AltBeaconAppKotlin private constructor() {
 		private const val STOP_MONITORING_DELAY: Long = 50
 
 		@Volatile
-		private var INSTANCE: AltBeaconAppKotlin? = null
-		fun getInstance(): AltBeaconAppKotlin {
+		private var INSTANCE: AltBeaconApp? = null
+		fun getInstance(): AltBeaconApp {
 			synchronized(this) {
 				var instance = INSTANCE
 				if (instance == null) {
-					instance = AltBeaconAppKotlin()
+					instance = AltBeaconApp()
 					INSTANCE = instance
 				}
 				//smart cast to non-null
@@ -123,9 +124,9 @@ class AltBeaconAppKotlin private constructor() {
 		// if you only want to detect beacons with a specific UUID, change the id1 paremeter to
 		// a UUID like Identifier.parse("2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6")
 		//region = Region("radius-uuid", null, null, null)
-		//val region = Region("all-beacons-region", null, null, null)
-		//val region = Region("all-beacons-region", Identifier.parse("417192b8-533d-4c3d-b5f3-d56a4be8fdce"), null, null)
 		val region = Region("all-beacons-region", null, null, null)
+		//val region = Region("all-beacons-region", Identifier.parse("417192b8-533d-4c3d-b5f3-d56a4be8fdce"), null, null)
+		//val region = Region("all-beacons-region", Identifier.parse("d546df97475747efbe093e2dcbdd0c77"), null, null)
 		currentRegion = region
 		beaconManager.startMonitoring(region)
 		beaconManager.startRangingBeacons(region)

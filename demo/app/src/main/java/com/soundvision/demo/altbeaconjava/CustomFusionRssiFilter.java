@@ -1,6 +1,8 @@
-package com.soundvision.demo.altbeacon;
+package com.soundvision.demo.altbeaconjava;
 
 import android.os.SystemClock;
+
+import com.soundvision.demo.altbeacon.KalmanFilter;
 
 import androidx.annotation.RestrictTo;
 import androidx.annotation.RestrictTo.Scope;
