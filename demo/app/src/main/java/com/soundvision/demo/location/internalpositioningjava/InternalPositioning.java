@@ -18,7 +18,6 @@ import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,18 +31,17 @@ public class InternalPositioning
     private static final String TAG = InternalPositioning.class.getSimpleName();
 
     //private VenueProp mVenue;
-    private HashMap<String, BeaconMisses> mBeaconsMisses = new HashMap<>();
-    private HashMap<String, BeaconStats> mBeaconsStats = new HashMap<>();
+    private final HashMap<String, BeaconMisses> mBeaconsMisses = new HashMap<>();
+    private final HashMap<String, BeaconStats> mBeaconsStats = new HashMap<>();
 
-    private InternalProperties mProperties;
-    private int mFloor;
+    private final InternalProperties mProperties;
 
     private int nthMeasurement = 0;
 
-    private MeasuredFilter mFilter1 = new MeasuredFilter(-100);
-    private MeasuredFilter mFilter2 = new MeasuredFilter(-100);
-    private LowPassFilter mLowPassFilterX = new LowPassFilter();
-    private LowPassFilter mLowPassFilterY = new LowPassFilter();
+    private final MeasuredFilter mFilter1 = new MeasuredFilter(-100);
+    private final MeasuredFilter mFilter2 = new MeasuredFilter(-100);
+    private final LowPassFilter mLowPassFilterX = new LowPassFilter();
+    private final LowPassFilter mLowPassFilterY = new LowPassFilter();
 
     public InternalPositioning()
     {
@@ -110,7 +108,7 @@ public class InternalPositioning
                     beaconMisses.misses = 0;
                     beaconMisses.timestamp = timestamp;
                     List<Integer> rssis = mBeaconsStats.get(mac).rssi;
-                    mProperties.lowSearchTill = rssis.size() < mProperties.lowestSearch ? rssis.size() : mProperties.lowestSearch;
+                    mProperties.lowSearchTill = Math.min(rssis.size(), mProperties.lowestSearch);
 
                     int lowest = 0;
                     for (int i = 0; i < mProperties.lowSearchTill; ++ i)
@@ -128,7 +126,7 @@ public class InternalPositioning
                     if (lowest == 0) beaconStats.lowest = -1;
                     else beaconStats.lowest = lowest;
 
-                    mProperties.averageUntil = rssis.size() < mProperties.averageOver ? rssis.size() : mProperties.averageOver;
+                    mProperties.averageUntil = Math.min(rssis.size(), mProperties.averageOver);
                     int total = 0;
                     int misses = 0;
                     int lastValue = 0;
@@ -213,7 +211,7 @@ public class InternalPositioning
             venueBeacons.put(beacon.mac, new BeaconCoordinates(beacon.x, beacon.y, beacon.z));
         }
 
-        mFloor = 8;
+        int mFloor = 8;
         for (String mac : sortedRSSIs)
         {
             BeaconStats beaconStats = mBeaconsStats.get(mac);
@@ -237,7 +235,8 @@ public class InternalPositioning
 
             String major = mBeaconsStats.get(mac).major;
             //NOTE: it seems like we don't use beacons from other floors for triangulation
-            if (floorStr.equals(major))
+            //TODO: remove this "|| true"
+            if (floorStr.equals(major) || true)
             {
                 if (finalSorted.size() == 2)
                 {
@@ -315,18 +314,14 @@ public class InternalPositioning
     {
         List<Map.Entry<String, BeaconStats>> list = new LinkedList(mBeaconsStats.entrySet());
 
-        Collections.sort(list, new Comparator<Map.Entry<String, BeaconStats>>()
-        {
-            public int compare(Map.Entry<String, BeaconStats> o1, Map.Entry<String, BeaconStats> o2)
-            {
-                if (o1.getValue().average > o2.getValue().average)
-                    return 1;
+        Collections.sort(list, (o1, o2) -> {
+            if (o1.getValue().average > o2.getValue().average)
+                return 1;
 
-                if (o1.getValue().average < o2.getValue().average)
-                    return -1;
+            if (o1.getValue().average < o2.getValue().average)
+                return -1;
 
-                return 0;
-            }
+            return 0;
         });
 
         List<String> sortedKeys = new ArrayList<>();
@@ -577,14 +572,7 @@ public class InternalPositioning
         PointD location = null;
 
         List<IBeacon> beaconList = new ArrayList<>(beacons);
-        Collections.sort(beaconList, new Comparator<IBeacon>()
-        {
-            @Override
-            public int compare(IBeacon beacon1, IBeacon beacon2)
-            {
-                return beacon2.getRssi() - beacon1.getRssi();
-            }
-        });
+        Collections.sort(beaconList, (beacon1, beacon2) -> beacon2.getRssi() - beacon1.getRssi());
 /*
         IBeacon strongestBeacon = null;
         for (IBeacon beacon : beaconList)
