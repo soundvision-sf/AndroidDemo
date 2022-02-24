@@ -8,6 +8,7 @@ public class BLEScanAdvertising extends DataParser {
     public int minor;
     public int major;
     public int rssi = 0;
+    public int txPower = -59;
     public byte[] manufactureData = null;
 
     public BLEScanAdvertising(byte[] data)
@@ -27,9 +28,18 @@ public class BLEScanAdvertising extends DataParser {
         if (!match(data)) return false;
         int pos = 4; // skip id
 
+        /*
+        * memcpy(&data.data[0], &chunk, 4);
+    memcpy(&data.data[4], addr, 6);
+    data.data[BLE_GAP_ADDR_LEN+4] = rssi;//memcpy(&data.data[BLE_GAP_ADDR_LEN], &rssi, 1);
+
+    memcpy(&data.data[BLE_GAP_ADDR_LEN+5], &len, 1);
+    memcpy(&data.data[BLE_GAP_ADDR_LEN+6], adv, len);
+        *
+        * */
+
         macAddress = readHex(data, pos, 6);
-        minor = readInt16(data, pos + 4);
-        major = 8;//
+
         pos += 6;
         rssi = readInt8(data, pos);  pos += 1;
         int len = readInt8(data, pos);  pos += 1; // MUST BE 25
@@ -47,6 +57,11 @@ public class BLEScanAdvertising extends DataParser {
                 manufactureData[i] = (byte)readInt8(data, pos + i);
             }
         }
+
+        minor = readInt16(manufactureData, 15);
+        major = readInt16(manufactureData, 17);
+        int txPower = -75;//manufactureData[19] - 255;
+
         return true;
     }
 

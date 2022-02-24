@@ -27,6 +27,8 @@ public class DeviceStats extends DataParser{
 
     public int brightness;
 
+    public int ble_scanner;
+
     boolean isValid = false;
 
     public DeviceStats(byte[] data)
@@ -74,6 +76,10 @@ public class DeviceStats extends DataParser{
         pos += 5; // align
 
         brightness = readInt(data, pos);  pos += 4;
+
+        if (proto_version>=5) {
+            ble_scanner = readInt(data, pos);  pos += 4;
+        }
 
         return true;
     }

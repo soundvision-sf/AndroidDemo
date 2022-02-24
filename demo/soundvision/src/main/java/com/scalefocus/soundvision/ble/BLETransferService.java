@@ -57,7 +57,8 @@ public class BLETransferService extends Service {
         SetStateMode,
         SetVolume,
         SetMute,
-        PlayAudio
+        PlayAudio,
+        BleScan,
     };
 
     public final static String SoundVisionDeviceName = "SoundVision";
@@ -100,7 +101,7 @@ public class BLETransferService extends Service {
 
     public static UUID DIS_MANUF_UUID = UUID.fromString("00002a29-0000-1000-8000-00805f9b34fb"); //ScaleFocus
     public static UUID DIS_MODEL_UUID = UUID.fromString("00002a24-0000-1000-8000-00805f9b34fb");
-    public static UUID DIS_SERIAL_UUID = UUID.fromString("00002a25-0000-1000-8000-00805f9b34fb");//9a938084a36037a4
+    public static UUID DIS_SERIAL_UUID = UUID.fromString("00002a25-0000-1000-8000-00805f9b34fb"); //9a938084a36037a4
     public static UUID DIS_HWREV_UUID = UUID.fromString("00002a26-0000-1000-8000-00805f9b34fb"); //v0.0
     public static UUID DIS_HWREV_STRING_UUID = UUID.fromString("00002a27-0000-1000-8000-00805f9b34fb");// : MK2.3 - Hardware Revision String
     public static UUID DIS_SWREV_UUID = UUID.fromString("00002a28-0000-1000-8000-00805f9b34fb"); //e2eff8d694a50b296662f5affce80b79299f0785
@@ -279,7 +280,7 @@ public class BLETransferService extends Service {
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             Log.w(TAG, "OnDescWrite!!!");
-
+/*
             BluetoothGattService disService = mBluetoothGatt.getService(DIS_UUID);
             if (disService != null)
             {
@@ -290,7 +291,7 @@ public class BLETransferService extends Service {
                         readCharacteristic(ch);
                     }
             }
-
+*/
             if(TX_CHAR_UUID.equals(descriptor.getCharacteristic().getUuid())) {
                 // When the first notification is set we can set the second
                 BluetoothGattService ImageTransferService = mBluetoothGatt.getService(IMAGE_TRANSFER_SERVICE_UUID);
@@ -328,7 +329,7 @@ public class BLETransferService extends Service {
     private void printVal(BluetoothGattCharacteristic d)
     {
         byte[] val = d.getValue();
-        if (val!=null && val.length > 1)
+        if (val!=null)
         {
             Log.i("NED", d.getUuid().toString() +" : "+ new String(val, StandardCharsets.UTF_8));
         }
@@ -369,6 +370,7 @@ public class BLETransferService extends Service {
                 || DIS_HWREV_STRING_UUID.equals(uuid)
                 || DIS_SWREV_UUID.equals(uuid)
         ) {
+
             printVal(characteristic);
             DISInfo.put(uuid, new String(characteristic.getValue(), StandardCharsets.UTF_8));
         }
@@ -376,8 +378,8 @@ public class BLETransferService extends Service {
             printVal(characteristic);
         }
 
-        if (!DISLoaded)
-            GetNextDISCharacteristic();
+        //if (!DISLoaded)
+          //  GetNextDISCharacteristic();
 
 
     }
@@ -488,12 +490,13 @@ public class BLETransferService extends Service {
             return;
         }
         mBluetoothGatt.disconnect();
+        DISLoaded = false;
+        DISInfo.clear();
         // mBluetoothGatt.close();
     }
 
     public void requestMtu(int mtu){
         Log.i(TAG, "Requesting 247 byte MTU");
-
         mBluetoothGatt.requestMtu(mtu);
     }
 
