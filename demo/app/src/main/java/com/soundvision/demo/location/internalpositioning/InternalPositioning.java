@@ -85,7 +85,7 @@ public class InternalPositioning
 
             if (beaconMisses != null)
             {
-                int lowPassRSSI = Math.abs(beacon.getRssi());
+                int lowPassRSSI = (int)Math.abs(beacon.getRssi());
 
                 beaconStats.rssi.add(0, lowPassRSSI);
 
@@ -162,8 +162,8 @@ public class InternalPositioning
                 //Log.i("NED", "min : 0x"+Integer.toHexString(tempBeaconStats.minor)+"  maj : 0x"+Integer.toHexString( tempBeaconStats.major ));
 
                 tempBeaconStats.average = Math.abs(beacon.getRssi());
-                tempBeaconStats.lowest = Math.abs(beacon.getRssi());
-                tempBeaconStats.rssi.add(Math.abs(beacon.getRssi()));
+                tempBeaconStats.lowest = (int)Math.abs(beacon.getRssi());
+                tempBeaconStats.rssi.add((int)Math.abs(beacon.getRssi()));
                 tempBeaconStats.mac = mac;
                 mBeaconsStats.put(mac, tempBeaconStats);
             }
@@ -510,7 +510,7 @@ public class InternalPositioning
             @Override
             public int compare(IBeacon beacon1, IBeacon beacon2)
             {
-                return beacon2.getRssi() - beacon1.getRssi();
+                return (int)(beacon2.getRssi() - beacon1.getRssi());
             }
         });
 /*

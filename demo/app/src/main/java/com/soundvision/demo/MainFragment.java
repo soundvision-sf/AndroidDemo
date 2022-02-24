@@ -92,78 +92,20 @@ public class MainFragment extends Fragment implements IBLETransferClient {
     }
 
     private byte cmd_code = 0;
-    Handler mHandler = new Handler();
+    SVDataSender mDataSender = null;
 
-    class DataSender implements Runnable {
-        ArrayList<byte[]> taskList = new ArrayList<byte[]>();
-        @Override
-        public void run() {
-            try {
-                if (mBleConnected && (mService != null)) {
-                    byte[] t = task();
-                    mService.sendCommand(t);
-                }
-            } finally {
-
-            }
+    private void checkDevice()
+    {
+        if (mBleConnected && (mService != null)) {
+            if (mDataSender == null)
+                mDataSender = new SVDataSender(mService);
         }
 
-        synchronized private byte[] task()
-        {
-            if (taskList.size() == 0) return null;
-            byte[] ret = taskList.get(0);
-            taskList.remove(0);
-            return ret;
+        if (mDataSender != null) {
+            mDataSender.mBleConnected = mBleConnected;
         }
 
-        synchronized public void send(byte code)
-        {
-            taskList.add(new byte[]{code});
-            mHandler.post(mDataSender);
-        }
-
-        synchronized public void send(byte code, byte p1)
-        {
-            taskList.add(new byte[]{code, p1});
-            mHandler.post(mDataSender);
-        }
-
-        synchronized public void send(byte code, byte data[])
-        {
-            ByteBuffer bb = ByteBuffer.allocate(1+data.length);
-            bb.put(code);
-            bb.put(data);
-            taskList.add(bb.array());
-            mHandler.post(mDataSender);
-        }
-
-        synchronized public void send(byte code, byte p1, byte p2)
-        {
-            taskList.add(new byte[]{code, p1, p2});
-            mHandler.post(mDataSender);
-        }
-
-        synchronized public void sendDelayed(byte code, byte p1, byte p2, int delay)
-        {
-            taskList.add(new byte[]{code, p1, p2});
-            mHandler.postDelayed(mDataSender, delay);
-        }
-
-        synchronized public void sendDelayed(byte code, int delay)
-        {
-            taskList.add(new byte[]{code});
-            mHandler.postDelayed(mDataSender, delay);
-        }
-
-        synchronized public void skip()
-        {
-            task();
-            mHandler.removeCallbacks(mDataSender);
-        }
-
-    };
-
-    DataSender mDataSender = new DataSender();
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -305,7 +247,7 @@ public class MainFragment extends Fragment implements IBLETransferClient {
     private void setConnectionState(boolean connected)
     {
         mBleConnected = connected;
-
+        checkDevice();
         if (connected) {
             List<BluetoothGattService> list = mService.getSupportedGattServices();
             if (list != null)
@@ -332,13 +274,14 @@ public class MainFragment extends Fragment implements IBLETransferClient {
     @Override
     public void OnServiceConnect(BLETransferService service) {
         mService = service;
-
+        checkDevice();
 
     }
 
     @Override
     public void OnServiceDisconnect() {
         mService = null;
+        mDataSender = null;
     }
 
     @Override
@@ -348,8 +291,6 @@ public class MainFragment extends Fragment implements IBLETransferClient {
 
     @Override
     public void OnConnect() {
-
-
 
     }
 

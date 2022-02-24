@@ -7,6 +7,8 @@ public class GeometryPoint implements IGeometry
     public List<Double> coordinates;
     private String Ftype;
 
+    public double distance;
+
     public GeometryPoint()
     {
         Ftype = Geometry.Point;

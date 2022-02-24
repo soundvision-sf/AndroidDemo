@@ -16,9 +16,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.kynetics.uf.android.api.UFServiceCommunicationConstants;
-import com.kynetics.uf.android.api.UFServiceConfiguration;
-import com.kynetics.uf.android.api.UFServiceMessage;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.distribute.Distribute;
 import com.scalefocus.soundvision.ble.BLETransferService;
@@ -30,6 +27,7 @@ import com.scalefocus.soundvision.ble.data.DeviceStats;
 import com.soundvision.demo.dfu.AppCenterUpdateListener;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
@@ -54,9 +52,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES;
-import static com.kynetics.uf.android.api.UFServiceCommunicationConstants.MSG_AUTHORIZATION_RESPONSE;
-import static com.kynetics.uf.android.api.UFServiceCommunicationConstants.SERVICE_DATA_KEY;
 import static com.scalefocus.soundvision.ble.BLETransferService.BleCommand.GetBleParams;
 import static com.scalefocus.soundvision.ble.BLETransferService.startBLETransferService;
 
@@ -112,6 +107,8 @@ public class BaseActivity extends AppCompatActivity implements IBLETransferClien
         setContentView(R.layout.activity_base);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         Distribute.setListener(new AppCenterUpdateListener());
         Distribute.setEnabled(true);
         AppCenter.start(getApplication(), "53264e19-b237-4886-b8ed-c71d55435528", Distribute.class);
@@ -126,6 +123,7 @@ public class BaseActivity extends AppCompatActivity implements IBLETransferClien
         fragmentList.add( new FragmentItem(new ColorCtrlFragment(), "Colors Ctrl."));
         fragmentList.add( new FragmentItem(new DeviceFirmwareUpgradeFragment(), "FW Upgrade"));
         fragmentList.add( new FragmentItem(new LocationFragment(), "Location"));
+        fragmentList.add( new FragmentItem(new BeaconScanFragment(), "Scan"));
 
         switchTo(fragmentList.get(0));
     }
@@ -133,6 +131,7 @@ public class BaseActivity extends AppCompatActivity implements IBLETransferClien
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
+        
         /*
         switch(event.getAction())
         {
@@ -436,103 +435,6 @@ public class BaseActivity extends AppCompatActivity implements IBLETransferClien
     @Override
     public void OnBLEAdvScan(BLEScanAdvertising stats) {
         for (FragmentItem f : fragmentList) f.client.OnBLEAdvScan(stats);
-    }
-
-
-    private Messenger mHawkBitService;
-    private boolean mIsBound = false;
-
-    private ServiceConnection mHawkBitConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            mHawkBitService = new Messenger(service);
-
-            Toast.makeText(BaseActivity.this, R.string.connected,
-                    Toast.LENGTH_SHORT).show();
-            try {
-                Message msg = Message.obtain(null,
-                        UFServiceCommunicationConstants.MSG_REGISTER_CLIENT);
-                msg.replyTo = mMessenger;
-                mHawkBitService.send(msg);
-            } catch (RemoteException e) {
-                Toast.makeText(BaseActivity.this, "service communication error",
-                        Toast.LENGTH_SHORT).show();
-            }
-            mIsBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-
-        @Override
-        public void onBindingDied(ComponentName name) {
-
-        }
-
-        @Override
-        public void onNullBinding(ComponentName name) {
-
-        }
-
-    };
-
-    void doBindService() {
-        final Intent intent = new Intent(UFServiceCommunicationConstants.SERVICE_ACTION);
-        intent.setPackage(UFServiceCommunicationConstants.SERVICE_PACKAGE_NAME);
-        intent.setFlags(FLAG_INCLUDE_STOPPED_PACKAGES);
-        final boolean serviceExist = bindService(intent, mHawkBitConnection, Context.BIND_AUTO_CREATE);
-        if(!serviceExist){
-            Toast.makeText(getApplicationContext(), "UpdateFactoryService not found",Toast.LENGTH_LONG).show();
-            unbindService(mHawkBitConnection);
-            this.finish();
-        }
-    }
-
-    private void ConfigureService()
-    {
-        HashMap<String,String> targetAttributes = new HashMap<>(2);
-        targetAttributes.put("attribute1","attributeValue1");
-        targetAttributes.put("attribute2","attributeValue2");
-        final Bundle data = new Bundle();
-        data.putSerializable(SERVICE_DATA_KEY, UFServiceConfiguration.builder()
-                .withControllerId("controllerId")
-                .withTenant("tenant")
-                .withUrl("https://personal.updatefactory.io")
-                .withTargetAttributes(targetAttributes)
-                .build());
-
-        Message msg = Message.obtain(null,
-                UFServiceCommunicationConstants.MSG_CONFIGURE_SERVICE);
-        msg.replyTo = mMessenger;
-        msg.setData(data);
-    }
-
-    private void sendPermissionResponse(boolean response){
-        Message msg = Message.obtain(null, MSG_AUTHORIZATION_RESPONSE);
-        msg.getData().putBoolean(SERVICE_DATA_KEY, response);
-        try {
-            mHawkBitService.send(msg);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    Messenger mMessenger = new Messenger(new HandlerReplyMsg());
-    class HandlerReplyMsg extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            String recdMessage = msg.obj.toString(); //msg received from service
-            Toast.makeText(BaseActivity.this, "Response Fetched", Toast.LENGTH_LONG).show();
-
-            final Serializable serializable = msg.getData().getSerializable(SERVICE_DATA_KEY);
-            if(!(serializable instanceof UFServiceConfiguration)) {
-                UFServiceMessage messageObj = (UFServiceMessage)serializable;
-            }
-
-        }
     }
 
 }

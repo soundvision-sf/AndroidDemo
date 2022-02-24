@@ -25,7 +25,7 @@ public class MeasuredFilter implements Parcelable
         this.oldMean = mean;
         this.annealingRate = 10;
         this.annealingStart = 150;
-        this.annealingSteady = 10;
+        this.annealingSteady = 50; // SPEED
         this.gain = annealingStart;
         this.variance = 0.5;
         this.next = mean;

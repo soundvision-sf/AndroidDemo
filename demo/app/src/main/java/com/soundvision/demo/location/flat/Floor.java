@@ -45,14 +45,25 @@ public class Floor
         if (f.properties.containsKey("type"))
         {
             String type = (String)f.properties.get("type");
-            switch (type)
+
+            switch (type.toLowerCase())
             {
                 case "obstacle":
                 {
                     Zone z = new Zone();
-                    z.id = (int)f.properties.get("fid");
+                    int FID = 0;
+                    try {
+                        FID = Integer.valueOf(f.properties.get("fid").toString());
+                    } catch (Exception e)
+                    {
+                        FID = (int)Double.parseDouble(f.properties.get("fid").toString());
+                    }
+                    z.id = FID;
+
                     z.name = (String)f.properties.get("name");
                     z.type = Feature.Obstacle;
+                    f.properties.put("type", Feature.Obstacle);
+                    f.type = Feature.Obstacle;
                     z.uuid = "";
                     z.features.add(f);
                     zones.add(z);
@@ -61,15 +72,23 @@ public class Floor
                 case "suite":
                 {
                     Zone z = new Zone();
-                    z.id = (int)((long)f.properties.get("fid"));
+                    int FID = 0;
+                    try {
+                        FID = Integer.valueOf(f.properties.get("fid").toString());
+                    } catch (Exception e)
+                    {
+                        FID = (int)Double.parseDouble(f.properties.get("fid").toString());
+                    }
+                    z.id = FID;
                     z.name = (String)f.properties.get("name");
                     z.type = Feature.Suite;
+                    f.type = Feature.Suite;
                     z.uuid = "";
                     z.features.add(f);
                     zones.add(z);
                 }
                 break;
-                case "POI":
+                case "poi":
                 {
                     f.type = Feature.POI;
                     POI.add(f);
@@ -77,9 +96,27 @@ public class Floor
                 break;
                 case "room":
                 {
+                    f.properties.put("type", Feature.Room);
                     Zone z = new Zone();
-                    z.id = (int)((long)f.properties.get("fid"));
-                    z.name = (String)f.properties.get("room");
+                    if (f.properties.containsKey("fid"))
+                    {
+                        try
+                        {
+                            z.id = (int)((long)f.properties.get("fid"));
+                        } catch (Exception e)
+                        {
+                            z.id = (int)((double)f.properties.get("fid"));
+                        }
+                    }
+                    if (f.properties.containsKey("name"))
+                        z.name = (String)f.properties.get("name");
+                    else
+                    if (f.properties.containsKey("room"))
+                        z.name = (String)f.properties.get("room");
+                    else
+                    if (f.properties.containsKey("alias"))
+                        z.name = (String)f.properties.get("alias");
+
                     z.type = Feature.Room;
                     z.uuid = "";
                     z.features.add(f);
@@ -88,6 +125,7 @@ public class Floor
                 break;
                 case "route":
                 {
+                    f.type = Feature.Room;
                     routeCtrl.ImportLinks(f);
                 }
                 break;

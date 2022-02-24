@@ -27,6 +27,13 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.scalefocus.soundvision.ble.data.BLEScanAdvertising;
+import com.soundvision.demo.utils.AverageValue;
+import com.soundvision.demo.utils.AverageValueTime;
+
+import org.altbeacon.beacon.Beacon;
+
+import java.util.List;
+import java.util.Locale;
 
 /**
 * The <code>IBeacon</code> class represents a single hardware iBeacon detected by 
@@ -104,7 +111,10 @@ public class IBeacon
     /**
      * The measured signal strength of the Bluetooth packet that led do this iBeacon detection.
      */
-    public int rssi;
+    public float Frssi;
+    public long scanCount = 1; // constructor
+    public long lastReportTime = -1; // constructor
+    public AverageValueTime rssiList = new AverageValueTime(16, 9000);
     /**
      * The calibrated measured Tx power of the iBeacon in RSSI
      * This value is baked into an iBeacon when it is manufactured, and
@@ -124,10 +134,16 @@ public class IBeacon
     public double getAccuracy()
     {
         if (accuracy == null) {
-            accuracy = calculateAccuracy(txPower, runningAverageRssi != null ? runningAverageRssi : rssi );     
+            accuracy = calculateAccuracy(txPower, runningAverageRssi != null ? runningAverageRssi : getRssi() );
         }
         return accuracy;
     }
+
+    public List<float[]> getRSSIList()
+    {
+        return rssiList.getList();
+    }
+
     /**
      * @see #major
      * @return major
@@ -155,13 +171,23 @@ public class IBeacon
         }
         return proximity;       
     }
-    /**
-     * @see #rssi
-     * @return rssi
-     */
-    public int getRssi()
+
+    public float newRssi(float rssi)
     {
-        return rssi;
+        scanCount++;
+        Frssi = rssiList.add(rssi);
+        lastReportTime = System.currentTimeMillis();
+        return Frssi;
+    }
+
+    public float getRssi()
+    {
+        return Frssi;
+    }
+
+    public float getRssiError()
+    {
+        return rssiList.getErr();
     }
     /**
      * @see #txPower
@@ -208,10 +234,26 @@ public class IBeacon
         iBeacon.mac = adv.macAddress;
         iBeacon.major = adv.major;//(scanData[startByte+20] & 0xff) * 0x100 + (scanData[startByte+21] & 0xff);
         iBeacon.minor = adv.minor;//(scanData[startByte+22] & 0xff) * 0x100 + (scanData[startByte+23] & 0xff);
-        iBeacon.txPower = -59;//(int)scanData[startByte+24]; // this one is signed
-        iBeacon.rssi = adv.rssi;
+        iBeacon.txPower = -75;//(int)scanData[startByte+24]; // this one is signed
+        iBeacon.rssiList.add(adv.rssi);
+        iBeacon.lastReportTime = System.currentTimeMillis();
         return iBeacon;
     }
+
+    public static IBeacon fromBLEBeacon(Beacon b)
+    {
+        IBeacon iBeacon = new IBeacon();
+        iBeacon.mac = b.getBluetoothAddress().toUpperCase().replace(":", "");
+        iBeacon.major = b.getManufacturer();//(scanData[startByte+20] & 0xff) * 0x100 + (scanData[startByte+21] & 0xff);
+        iBeacon.minor = 0;//(scanData[startByte+22] & 0xff) * 0x100 + (scanData[startByte+23] & 0xff);
+        iBeacon.txPower = b.getTxPower();//(int)scanData[startByte+24]; // this one is signed
+        iBeacon.rssiList.add(b.getRssi());
+        iBeacon.lastReportTime = System.currentTimeMillis();
+        return iBeacon;
+    }
+
+
+
     /**
      * Construct an iBeacon from a Bluetooth LE packet collected by Android's Bluetooth APIs
      * 
@@ -226,6 +268,7 @@ public class IBeacon
         iBeacon.minor = 0;
         iBeacon.proximityUuid = "00000000-0000-0000-0000-000000000000";
         iBeacon.txPower = -55;
+        iBeacon.lastReportTime = System.currentTimeMillis();
         return iBeacon;
     }
     
@@ -235,7 +278,8 @@ public class IBeacon
         this.minor = otherIBeacon.minor;
         this.accuracy = otherIBeacon.accuracy;
         this.proximity = otherIBeacon.proximity;
-        this.rssi = otherIBeacon.rssi;
+        //this.rssi = otherIBeacon.rssi;
+        this.rssiList.add(otherIBeacon.getRssi());
         this.proximityUuid = otherIBeacon.proximityUuid;
         this.txPower = otherIBeacon.txPower;
     }
@@ -247,7 +291,7 @@ public class IBeacon
         this.proximityUuid = proximityUuid;
         this.major = major;
         this.minor = minor;
-        this.rssi = rssi;
+        this.rssiList.add(rssi);
         this.txPower = txPower;
     }
     

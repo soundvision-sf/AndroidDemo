@@ -5,4 +5,5 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="CYAN">#00ffff</color>
     <color name="color_app_background">#292929</color>
+    <color name="dlg_trans_col">#eF3f80af</color>
 </resources>

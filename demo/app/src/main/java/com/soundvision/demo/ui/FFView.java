@@ -27,6 +27,7 @@ import com.soundvision.demo.location.ffgeojson.GeometryLineString;
 import com.soundvision.demo.location.ffgeojson.GeometryPoint;
 import com.soundvision.demo.location.ffgeojson.GeometryPolygon;
 import com.soundvision.demo.location.ffgeojson.IGeometry;
+import com.soundvision.demo.location.flat.BeaconProp;
 import com.soundvision.demo.location.flat.Floor;
 
 import com.soundvision.demo.location.ffgeojson.PointD;
@@ -58,8 +59,6 @@ public class FFView extends View {
 
     private int width;
     private int height;
-
-
     //private Brush brush_newObject = new SolidBrush(Color.FromArgb(0x40ff0000));
 
     private PointD offset, mapOffset, drawOffset;
@@ -138,6 +137,11 @@ public class FFView extends View {
         invalidate();;
     }
 
+    public PointD getMapCenter()
+    {
+        return new PointD((width / 2.0) - mapOffset.X, (height / 2.0) - mapOffset.Y);
+    }
+
     private void initColors()
     {
         linePen = pen(0xffff0000, 12);
@@ -213,6 +217,12 @@ public class FFView extends View {
         }
         else
         invalidate();
+    }
+
+    public void setBeaconProps(List<BeaconProp> beacons)
+    {
+        if (selArea != null)
+        selArea.updateBeaconProps(beacons);
     }
 
     public void setUserLocation(PointD pt)
@@ -585,6 +595,15 @@ public class FFView extends View {
         
     }
 
+    private void DrawText(Canvas g, String text, PointD point, Paint paint, int rad, PointD offs, Double angle, Double scale, int selection)
+    {
+        PointD pt = rotate_point(offs.X + ((point.X + offset.X) * scale), offs.Y + ((point.Y + offset.Y) * scale), angle);
+        RectF rc = new RectF((float)pt.X - rad, (float)pt.Y - rad, (float)pt.X +rad, (float)pt.Y +rad);
+
+        g.drawText(text, rc.right, rc.bottom, paint);
+
+    }
+
     private void DrawImage(Canvas g, Bitmap image, PointD point, int zoneID, int codeID, PointD offs, Double angle, Double scale, int selection)
     {
         PointD pt = rotate_point(offs.X + ((point.X + offset.X) * scale), offs.Y + ((point.Y + offset.Y) * scale), angle);
@@ -614,6 +633,12 @@ public class FFView extends View {
             {
                 DrawSimplePoint(g, new PointD(gp.coordinates.get(0), gp.coordinates.get(1)), paint, rad, offs, angle, scale, FSelection.indexOf(feature));
             }
+
+            if (gp.distance != 0) {
+                paint.setTextSize((float)(48f * scale));
+                DrawText(g, String.format("%.2f", gp.distance) , new PointD(gp.coordinates.get(0), gp.coordinates.get(1)), paint, rad, offs, angle, scale, FSelection.indexOf(feature));
+            }
+
         }
     }
 
@@ -699,6 +724,7 @@ public class FFView extends View {
                         //GeometryPoint gp = (GeometryPoint)f.geometry;
 
                         DrawPoint(g, f, fillBeacon, POINT_RADIUS, offs, angle, scale, FSelection.indexOf(f));
+
                         //DrawImage(g, iconBeacon, new PointD(gp.coordinates.get(0) + f.offsetX, gp.coordinates.get(1) + f.offsetY), zoneID, SEL_CODE_BEACON, offs, angle, scale, FSelection.indexOf(f));
                     }
                     //DrawPoint(g, f, zoneID, SEL_CODE_POINT, offs, angle, scale, FSelection.indexOf(f));

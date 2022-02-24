@@ -13,6 +13,7 @@ public class Feature
     public static final String Beacon = "Beacon";
     public static final String Obstacle = "Obstacle";
     public static final String Suite = "Suite";
+    public static final String Exit = "Exit";
 
     //private Map<String, Object> Fproperties = new HashMap<String, Object>();
 
