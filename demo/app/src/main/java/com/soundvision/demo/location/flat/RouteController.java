@@ -23,7 +23,6 @@ public class RouteController
     public List<RouteNode> nodes() {return floor.routeNodes;}
     public List<RouteNodeLink> links() {return floor.routeLinks;}
 
-      
     public boolean visible = true;
 
     public RouteNode AddRoute(RouteNode r)
@@ -129,18 +128,6 @@ public class RouteController
             }
             break;
         }
-            /*
-            for (List<List<double>> coords : f.geometry.coordinates)
-            {
-                //PointD[] pt = new PointD[coords.Count];
-                for (int i = 0; i < coords.Count; i++)
-                {
-                    RouteNode r = new RouteNode(new PointD((float)coords[i][0], (float)coords[i][1]));
-                    r = AddRoute(r);
-                    if (lastID >= 0) AddLink(new RouteNodeLink( lastID, r.id));
-                    lastID = r.id;
-                }
-            } */
         return true;
     }
 
